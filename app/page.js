@@ -8,7 +8,7 @@ export default function Home() {
             Language Lite ✨
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Your AI-powered language learning companion that adapts everything to YOUR level
+            Adapt any text into YOUR level
           </p>
           <button className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">
             Try Demo Below 👇
