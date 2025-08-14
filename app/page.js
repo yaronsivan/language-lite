@@ -193,7 +193,7 @@ export default function Home() {
                 className="w-full p-3 border-2 border-gray-300 text-black focus:border-gray-600 focus:outline-none mb-2"
               />
               <p className="text-sm text-gray-600 mb-4">
-                We'll only use this to save your credits and progress.
+                We&#39;ll only use this to save your credits and progress.
               </p>
               
               <button
