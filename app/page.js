@@ -110,6 +110,7 @@ export default function Home() {
                 onChange={(e) => setLanguage(e.target.value)}
                 className="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-500 transition-all"
               >
+                <option>Hebrew</option>
                 <option>Spanish</option>
                 <option>French</option>
                 <option>German</option>
