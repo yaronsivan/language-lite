@@ -217,9 +217,9 @@ export default function Home() {
 
                 {emailSaved && (
                   <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 text-center animate-bounce-in">
-                    <h4 className="font-bold text-lg text-green-800 mb-2">🎉 You're on the list!</h4>
+                    <h4 className="font-bold text-lg text-green-800 mb-2">🎉 You&apos;re on the list!</h4>
                     <p className="text-gray-700">
-                      We'll notify you when Language Lite launches. Get ready to revolutionize your language learning!
+                      We&apos;ll notify you when Language Lite launches. Get ready to revolutionize your language learning!
                     </p>
                   </div>
                 )}
