@@ -12,6 +12,54 @@ const LANGUAGES = [
   'Indonesian', 'Malay', 'Tagalog', 'Swahili', 'Yoruba', 'Zulu', 'Amharic', 'English'
 ];
 
+// Demo content for split-screen showcase
+const DEMO_CONTENT = {
+  original: {
+    text: "Recent technological breakthroughs in artificial intelligence have revolutionized numerous industries, fundamentally transforming how businesses operate and consumers interact with digital platforms.",
+    wordCount: 24,
+    complexity: "Advanced"
+  },
+  adapted: {
+    Spanish: {
+      Beginner: {
+        text: "Los nuevos avances en inteligencia artificial han cambiado muchas industrias. Ahora las empresas trabajan de manera diferente y las personas usan las plataformas digitales de forma nueva.",
+        vocabulary: [
+          { word: "avances", translation: "advances" },
+          { word: "inteligencia artificial", translation: "artificial intelligence" },
+          { word: "industrias", translation: "industries" },
+          { word: "empresas", translation: "businesses" }
+        ],
+        wordCount: 29,
+        complexity: "Beginner"
+      },
+      Intermediate: {
+        text: "Los recientes avances tecnológicos en inteligencia artificial han revolucionado numerosas industrias, transformando fundamentalmente cómo operan las empresas y cómo los consumidores interactúan con plataformas digitales.",
+        vocabulary: [
+          { word: "avances tecnológicos", translation: "technological advances" },
+          { word: "revolucionado", translation: "revolutionized" },
+          { word: "numerosas", translation: "numerous" },
+          { word: "fundamentalmente", translation: "fundamentally" }
+        ],
+        wordCount: 26,
+        complexity: "Intermediate"
+      }
+    },
+    French: {
+      Beginner: {
+        text: "Les nouvelles technologies d'intelligence artificielle ont changé beaucoup d'industries. Maintenant les entreprises travaillent différemment et les gens utilisent les plateformes numériques d'une nouvelle façon.",
+        vocabulary: [
+          { word: "technologies", translation: "technologies" },
+          { word: "intelligence artificielle", translation: "artificial intelligence" },
+          { word: "industries", translation: "industries" },
+          { word: "entreprises", translation: "businesses" }
+        ],
+        wordCount: 28,
+        complexity: "Beginner"
+      }
+    }
+  }
+};
+
 export default function Home() {
   const [email, setEmail] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
@@ -23,39 +71,11 @@ export default function Home() {
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
-
-  useEffect(() => {
-    const initAuth = async () => {
-      // Check for authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        handleAuthUser(user);
-      } else {
-        // Fallback to old localStorage method
-        const savedEmail = localStorage.getItem('userEmail');
-        if (savedEmail) {
-          checkUserCredits(savedEmail);
-        }
-      }
-    };
-
-    initAuth();
-    
-    // Listen for auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        handleAuthUser(session.user);
-      } else {
-        setIsRegistered(false);
-        setEmail('');
-        setCredits(0);
-      }
-    });
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
-  }, []);
+  
+  // Demo state for split-screen
+  const [demoLanguage, setDemoLanguage] = useState('Spanish');
+  const [demoLevel, setDemoLevel] = useState('Beginner');
+  const [showOriginal, setShowOriginal] = useState(true);
 
   const handleAuthUser = useCallback(async (user) => {
     const userEmail = user.email;
@@ -93,10 +113,45 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const initAuth = async () => {
+      // Check for authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        handleAuthUser(user);
+      } else {
+        // Fallback to old localStorage method
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+          checkUserCredits(savedEmail);
+        } else {
+          // Redirect to landing page if not authenticated
+          window.location.href = '/landing';
+        }
+      }
+    };
+
+    initAuth();
+    
+    // Listen for auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        handleAuthUser(session.user);
+      } else {
+        setIsRegistered(false);
+        setEmail('');
+        setCredits(0);
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [handleAuthUser]);
 
   const checkUserCredits = async (userEmail) => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('users')
         .select('credits')
         .eq('email', userEmail)
@@ -109,38 +164,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error checking credits:', error);
-    }
-  };
-
-  const handleRegister = async () => {
-    if (!email) {
-      alert('Please enter your email');
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .upsert([
-          { 
-            email, 
-            language, 
-            level,
-            credits: 6,
-            last_credit_refresh: new Date().toISOString().split('T')[0]
-          }
-        ], { onConflict: 'email' })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      localStorage.setItem('userEmail', email);
-      setCredits(data.credits);
-      setIsRegistered(true);
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to register. Please try again.');
     }
   };
 
@@ -207,67 +230,64 @@ export default function Home() {
     lang.toLowerCase().includes(searchLang.toLowerCase())
   );
 
+  // Helper function to get demo content
+  const getDemoContent = () => {
+    const adapted = DEMO_CONTENT.adapted[demoLanguage]?.[demoLevel];
+    return adapted || DEMO_CONTENT.adapted.Spanish.Beginner;
+  };
+
+  // Auto-cycle demo text every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowOriginal(prev => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <main className="min-h-screen bg-white">
-      {/* Simple Header - guaranteed to work */}
-      <header className="bg-gray-900 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Language Lite</h1>
-              <p className="text-gray-300 text-sm">
-                AI-powered language adaptation
-              </p>
-            </div>
-            {isRegistered && (
-              <div className="text-right">
-                <div className="text-sm text-gray-300">Logged in as</div>
-                <div className="font-semibold text-white">{email.split('@')[0]}</div>
-                <div className="mt-1">
-                  <span className="bg-white text-gray-900 px-3 py-1 font-bold text-sm inline-block">
-                    {credits} credits remaining
-                  </span>
-                </div>
-                <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    localStorage.removeItem('userEmail');
-                    setIsRegistered(false);
-                    setEmail('');
-                    setCredits(0);
-                  }}
-                  className="mt-2 text-xs text-gray-300 hover:text-white underline"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {!isRegistered ? (
-          // Simple Registration
-          <div className="max-w-md mx-auto mt-12">
-            <div className="bg-white border-2 border-gray-800 shadow-xl p-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Enjoy reading any text in the language you are studying!
-              </h2>
-              <p className="text-xl text-gray-800 mb-4">
-                For every level!
-              </p>
-              <p className="text-gray-700 mb-6">
-                Make everything a learning material, read what really interests you - but in a simplified language.
-              </p>
-              <div className="bg-gray-50 border-l-4 border-gray-600 p-4 mb-6">
-                <p className="text-sm text-gray-800">
-                  Get <strong>6 free credits</strong> immediately, plus <strong>2 credits daily</strong> forever.
+      {!isRegistered ? (
+        // New split-screen landing page
+        <div className="min-h-screen flex">
+          {/* Left Panel - Authentication */}
+          <div className="w-2/5 bg-gray-50 flex flex-col justify-center px-8 lg:px-12">
+            <div className="max-w-md mx-auto w-full">
+              {/* Logo & Brand */}
+              <div className="mb-8">
+                <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{fontFamily: "'Playfair Display', serif"}}>
+                  Language Lite
+                </h1>
+                <p className="text-xl text-gray-600">
+                  Transform any text into perfect learning material
                 </p>
               </div>
-              
-              {/* Social Login with Supabase Auth UI */}
-              <div className="mb-6">
+
+              {/* Value Props */}
+              <div className="mb-8 space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
+                  <p className="text-gray-700">Read what interests you at your exact level</p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
+                  <p className="text-gray-700">Instant vocabulary explanations</p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
+                  <p className="text-gray-700">35+ languages supported</p>
+                </div>
+              </div>
+
+              {/* Auth Component */}
+              <div className="bg-white border border-gray-200 shadow-lg p-6 rounded-lg">
+                <div className="mb-4">
+                  <div className="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-4">
+                    <p className="text-sm text-indigo-800">
+                      Get <strong>6 free credits</strong> immediately, plus <strong>2 credits daily</strong>
+                    </p>
+                  </div>
+                </div>
+                
                 <Auth
                   supabaseClient={supabase}
                   appearance={{
@@ -275,15 +295,14 @@ export default function Home() {
                     variables: {
                       default: {
                         colors: {
-                          brand: '#111827',
-                          brandAccent: '#1f2937',
+                          brand: '#4f46e5',
+                          brandAccent: '#4338ca',
                         },
                       },
                     },
                     className: {
-                      container: 'auth-container',
-                      button: 'auth-button',
-                      divider: 'my-4',
+                      container: 'auth-container-new',
+                      button: 'auth-button-new',
                     },
                   }}
                   providers={['google', 'facebook']}
@@ -296,7 +315,7 @@ export default function Home() {
                       magic_link: {
                         email_input_label: 'Email Address',
                         email_input_placeholder: 'you@example.com',
-                        button_label: 'Start Learning with Email →',
+                        button_label: 'Start Learning →',
                         loading_button_label: 'Sending magic link...',
                         link_text: ''
                       },
@@ -304,67 +323,154 @@ export default function Home() {
                   }}
                 />
               </div>
-              
-              <style jsx global>{`
-                .auth-container {
-                  width: 100%;
-                }
-                .auth-container button {
-                  width: 100%;
-                  padding: 0.75rem;
-                  font-weight: bold;
-                  border: 2px solid #e5e7eb;
-                  transition: all 0.2s;
-                }
-                .auth-container button:hover {
-                  background-color: #f9fafb;
-                  border-color: #6b7280;
-                }
-                .auth-container [data-supabase-auth-ui_button] {
-                  background-color: #111827;
-                  color: white;
-                }
-                .auth-container [data-supabase-auth-ui_button]:hover {
-                  background-color: #1f2937;
-                }
-                .auth-container input {
-                  width: 100%;
-                  padding: 0.75rem;
-                  border: 2px solid #d1d5db;
-                  color: black;
-                  background-color: white;
-                }
-                .auth-container input:focus {
-                  border-color: #4b5563;
-                  outline: none;
-                }
-                .auth-container .supabase-auth-ui_ui-divider {
-                  margin: 1.5rem 0;
-                  text-align: center;
-                  position: relative;
-                }
-                .auth-container .supabase-auth-ui_ui-divider::before {
-                  content: '';
-                  position: absolute;
-                  top: 50%;
-                  left: 0;
-                  right: 0;
-                  height: 1px;
-                  background: #e5e7eb;
-                }
-                .auth-container .supabase-auth-ui_ui-divider span {
-                  background: white;
-                  padding: 0 1rem;
-                  position: relative;
-                  color: #6b7280;
-                  font-size: 0.875rem;
-                }
-              `}</style>
+
+              {/* Trust Indicators */}
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-500">
+                  Trusted by 10,000+ language learners worldwide
+                </p>
+              </div>
             </div>
           </div>
-        ) : (
-          // Main App - Simple B&W
-          <>
+
+          {/* Right Panel - Live Demo */}
+          <div className="w-3/5 bg-gradient-to-br from-indigo-600 to-purple-700 flex flex-col justify-center px-8 lg:px-12 text-white">
+            <div className="max-w-2xl mx-auto w-full">
+              {/* Demo Header */}
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold mb-4" style={{fontFamily: "'Playfair Display', serif"}}>
+                  See It In Action
+                </h2>
+                <p className="text-indigo-100 text-lg">
+                  Watch how complex text transforms into perfect learning material
+                </p>
+              </div>
+
+              {/* Language Controls */}
+              <div className="mb-6 flex flex-wrap gap-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex-1 min-w-48">
+                  <label className="block text-sm font-medium text-indigo-100 mb-2">
+                    Learning Language
+                  </label>
+                  <select
+                    value={demoLanguage}
+                    onChange={(e) => setDemoLanguage(e.target.value)}
+                    className="w-full bg-white/20 border border-white/30 rounded-md px-3 py-2 text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  >
+                    <option value="Spanish" className="text-gray-900">🇪🇸 Spanish</option>
+                    <option value="French" className="text-gray-900">🇫🇷 French</option>
+                  </select>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex-1 min-w-32">
+                  <label className="block text-sm font-medium text-indigo-100 mb-2">
+                    Your Level
+                  </label>
+                  <select
+                    value={demoLevel}
+                    onChange={(e) => setDemoLevel(e.target.value)}
+                    className="w-full bg-white/20 border border-white/30 rounded-md px-3 py-2 text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  >
+                    <option value="Beginner" className="text-gray-900">Beginner</option>
+                    <option value="Intermediate" className="text-gray-900">Intermediate</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Text Transformation Demo */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">
+                    {showOriginal ? 'Original Text (English)' : `Adapted Text (${demoLanguage})`}
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full transition-colors ${showOriginal ? 'bg-red-400' : 'bg-green-400'}`}></div>
+                    <span className="text-sm text-indigo-100">
+                      {showOriginal ? 'Complex' : getDemoContent().complexity}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="bg-white/95 rounded-lg p-4 text-gray-900 min-h-24">
+                  <p className="leading-relaxed transition-all duration-500">
+                    {showOriginal ? DEMO_CONTENT.original.text : getDemoContent().text}
+                  </p>
+                </div>
+                
+                <div className="mt-4 flex justify-between items-center text-sm text-indigo-100">
+                  <span>
+                    Words: {showOriginal ? DEMO_CONTENT.original.wordCount : getDemoContent().wordCount}
+                  </span>
+                  <span className="text-yellow-300">
+                    Auto-switching every 3 seconds
+                  </span>
+                </div>
+              </div>
+
+              {/* Vocabulary Preview */}
+              {!showOriginal && getDemoContent().vocabulary && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Key Vocabulary
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {getDemoContent().vocabulary.slice(0, 4).map((word, index) => (
+                      <div key={index} className="bg-yellow-400/20 border border-yellow-400/30 rounded-md p-3">
+                        <div className="font-medium text-yellow-300">{word.word}</div>
+                        <div className="text-sm text-yellow-100">{word.translation}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Call to Action */}
+              <div className="mt-8 text-center">
+                <div className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-lg inline-flex items-center space-x-2 font-semibold">
+                  <span>Start learning with your own text</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Existing authenticated view
+        <>
+          <header className="bg-gray-900 text-white shadow-lg">
+            <div className="container mx-auto px-4 py-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Language Lite</h1>
+                  <p className="text-gray-300 text-sm">
+                    AI-powered language adaptation
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-gray-300">Logged in as</div>
+                  <div className="font-semibold text-white">{email.split('@')[0]}</div>
+                  <div className="mt-1">
+                    <span className="bg-white text-gray-900 px-3 py-1 font-bold text-sm inline-block">
+                      {credits} credits remaining
+                    </span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      localStorage.removeItem('userEmail');
+                      setIsRegistered(false);
+                      setEmail('');
+                      setCredits(0);
+                    }}
+                    className="mt-2 text-xs text-gray-300 hover:text-white underline"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div className="container mx-auto px-4 py-8 max-w-4xl">
             {/* Input Section */}
             <div className="bg-white border-2 border-gray-200 shadow-lg p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -502,20 +608,20 @@ export default function Home() {
                 )}
               </div>
             )}
-          </>
-        )}
 
-        {/* Footer with privacy links */}
-        <footer className="mt-16 pt-8 pb-4 border-t border-gray-200">
-          <div className="text-center text-sm text-gray-600">
-            <a href="/privacy" className="hover:text-gray-900 hover:underline">Privacy Policy</a>
-            <span className="mx-2">•</span>
-            <a href="/delete-account" className="hover:text-gray-900 hover:underline">Data Deletion</a>
-            <span className="mx-2">•</span>
-            <a href="mailto:yaron@ulpan.co.il" className="hover:text-gray-900 hover:underline">Contact</a>
+            {/* Footer with privacy links */}
+            <footer className="mt-16 pt-8 pb-4 border-t border-gray-200">
+              <div className="text-center text-sm text-gray-600">
+                <a href="/privacy" className="hover:text-gray-900 hover:underline">Privacy Policy</a>
+                <span className="mx-2">•</span>
+                <a href="/delete-account" className="hover:text-gray-900 hover:underline">Data Deletion</a>
+                <span className="mx-2">•</span>
+                <a href="mailto:yaron@ulpan.co.il" className="hover:text-gray-900 hover:underline">Contact</a>
+              </div>
+            </footer>
           </div>
-        </footer>
-      </div>
+        </>
+      )}
     </main>
   );
 }
