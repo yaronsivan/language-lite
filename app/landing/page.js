@@ -162,8 +162,8 @@ export default function LandingPage() {
               }}
               providers={['google', 'facebook']}
               redirectTo="https://language-lite.com"
-              onlyThirdPartyProviders={false}
-              view="magic_link"
+              onlyThirdPartyProviders={true}
+              view="sign_in"
               showLinks={false}
               localization={{
                 variables: {
