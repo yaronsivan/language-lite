@@ -96,11 +96,11 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen flex">
       {/* Left Panel - Auth */}
-      <div className="w-full lg:w-2/5 bg-white flex flex-col justify-center p-8 lg:p-12">
+      <div className="w-full lg:w-2/5 bg-[#e8e9eb] flex flex-col justify-center p-8 lg:p-12">
         <div className="max-w-md mx-auto w-full">
           {/* Logo/Brand */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 font-serif">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2 font-zain">
               Language Lite
             </h1>
             <p className="text-lg text-gray-600">
@@ -188,7 +188,7 @@ export default function LandingPage() {
       </div>
 
       {/* Right Panel - Demo */}
-      <div className="hidden lg:flex w-3/5 bg-gradient-to-br from-indigo-500 to-purple-600 p-12 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex w-3/5 bg-[#ffb238] p-12 items-center justify-center relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute transform rotate-45 -right-40 -top-40 w-80 h-80 bg-white rounded-full"></div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
 
             {/* Article */}
             <article>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 font-serif">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 {currentContent.title}
               </h2>
               <p className="text-gray-700 leading-relaxed text-lg">
@@ -278,10 +278,10 @@ export default function LandingPage() {
       </div>
 
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Zain:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap');
         
-        .font-serif {
-          font-family: 'Playfair Display', serif;
+        .font-zain {
+          font-family: 'Zain', sans-serif;
         }
         
         body {
