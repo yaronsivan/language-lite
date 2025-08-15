@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function DeleteAccount() {
   return (
     <main className="min-h-screen bg-white">
@@ -41,12 +43,12 @@ export default function DeleteAccount() {
 
           <h3 className="text-lg font-semibold text-gray-900 mb-3">Alternative: Temporary Account Deactivation</h3>
           <p className="text-gray-700 mb-6">
-            If you'd like to temporarily stop using Language Lite but keep your account for future use, you can simply stop logging in. Your account will remain inactive but available for when you return.
+            If you&apos;d like to temporarily stop using Language Lite but keep your account for future use, you can simply stop logging in. Your account will remain inactive but available for when you return.
           </p>
 
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
             <p className="text-gray-700">
-              <strong>Note:</strong> Account deletion is permanent and cannot be undone. You will lose all your credits and learning history. If you want to use Language Lite again in the future, you'll need to create a new account.
+              <strong>Note:</strong> Account deletion is permanent and cannot be undone. You will lose all your credits and learning history. If you want to use Language Lite again in the future, you&apos;ll need to create a new account.
             </p>
           </div>
         </div>
@@ -64,9 +66,9 @@ export default function DeleteAccount() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 text-center">
-          <a href="/" className="text-blue-600 hover:underline">← Back to Language Lite</a>
+          <Link href="/" className="text-blue-600 hover:underline">← Back to Language Lite</Link>
           <span className="mx-2 text-gray-400">|</span>
-          <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
+          <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
         </div>
       </div>
     </main>

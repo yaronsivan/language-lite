@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
@@ -29,7 +29,7 @@ export default function Home() {
     checkAuthUser();
     
     // Listen for auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         handleAuthUser(session.user);
       } else {
@@ -42,9 +42,9 @@ export default function Home() {
     return () => {
       authListener?.subscription?.unsubscribe();
     };
-  }, []);
+  }, [checkAuthUser]);
 
-  const checkAuthUser = async () => {
+  const checkAuthUser = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       handleAuthUser(user);
@@ -55,7 +55,7 @@ export default function Home() {
         checkUserCredits(savedEmail);
       }
     }
-  };
+  }, []);
 
   const handleAuthUser = async (user) => {
     const userEmail = user.email;

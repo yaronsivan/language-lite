@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen bg-white">
@@ -32,7 +34,7 @@ export default function PrivacyPolicy() {
 
           <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-3">Data Security</h2>
           <p className="text-gray-700 mb-4">
-            We use industry-standard security measures to protect your data. Your information is stored securely using Supabase's encrypted database. We never sell or share your personal information with third parties for marketing purposes.
+            We use industry-standard security measures to protect your data. Your information is stored securely using Supabase&apos;s encrypted database. We never sell or share your personal information with third parties for marketing purposes.
           </p>
 
           <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-3">Third-Party Services</h2>
@@ -62,7 +64,7 @@ export default function PrivacyPolicy() {
             We keep your account data as long as your account is active. Text adaptations are processed in real-time and only stored temporarily for your session. You can request account deletion at any time.
           </p>
 
-          <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-3">Children's Privacy</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-3">Children&apos;s Privacy</h2>
           <p className="text-gray-700 mb-4">
             Language Lite is intended for users aged 13 and above. We do not knowingly collect information from children under 13.
           </p>
@@ -81,7 +83,7 @@ export default function PrivacyPolicy() {
           </p>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
-            <a href="/" className="text-blue-600 hover:underline">← Back to Language Lite</a>
+            <Link href="/" className="text-blue-600 hover:underline">← Back to Language Lite</Link>
           </div>
         </div>
       </div>
