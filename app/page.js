@@ -25,8 +25,21 @@ export default function Home() {
   const [adaptedResult, setAdaptedResult] = useState(null);
 
   useEffect(() => {
-    // Check for authenticated user
-    checkAuthUser();
+    const initAuth = async () => {
+      // Check for authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        handleAuthUser(user);
+      } else {
+        // Fallback to old localStorage method
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+          checkUserCredits(savedEmail);
+        }
+      }
+    };
+
+    initAuth();
     
     // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -42,22 +55,9 @@ export default function Home() {
     return () => {
       authListener?.subscription?.unsubscribe();
     };
-  }, [checkAuthUser]);
-
-  const checkAuthUser = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      handleAuthUser(user);
-    } else {
-      // Fallback to old localStorage method
-      const savedEmail = localStorage.getItem('userEmail');
-      if (savedEmail) {
-        checkUserCredits(savedEmail);
-      }
-    }
   }, []);
 
-  const handleAuthUser = async (user) => {
+  const handleAuthUser = useCallback(async (user) => {
     const userEmail = user.email;
     
     // Check if user exists in our users table
@@ -91,7 +91,8 @@ export default function Home() {
         setIsRegistered(true);
       }
     }
-  };
+  }, []);
+
 
   const checkUserCredits = async (userEmail) => {
     try {
