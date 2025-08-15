@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 const LANGUAGES = [
   'Hebrew', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Polish', 'Russian',
@@ -23,11 +25,73 @@ export default function Home() {
   const [adaptedResult, setAdaptedResult] = useState(null);
 
   useEffect(() => {
-    const savedEmail = localStorage.getItem('userEmail');
-    if (savedEmail) {
-      checkUserCredits(savedEmail);
-    }
+    // Check for authenticated user
+    checkAuthUser();
+    
+    // Listen for auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        handleAuthUser(session.user);
+      } else {
+        setIsRegistered(false);
+        setEmail('');
+        setCredits(0);
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, []);
+
+  const checkAuthUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      handleAuthUser(user);
+    } else {
+      // Fallback to old localStorage method
+      const savedEmail = localStorage.getItem('userEmail');
+      if (savedEmail) {
+        checkUserCredits(savedEmail);
+      }
+    }
+  };
+
+  const handleAuthUser = async (user) => {
+    const userEmail = user.email;
+    
+    // Check if user exists in our users table
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('credits')
+      .eq('email', userEmail)
+      .single();
+
+    if (existingUser) {
+      setEmail(userEmail);
+      setCredits(existingUser.credits);
+      setIsRegistered(true);
+    } else {
+      // Create user in our table
+      const { data: newUser } = await supabase
+        .from('users')
+        .insert([{
+          email: userEmail,
+          language: 'Spanish',
+          level: 'Beginner',
+          credits: 6,
+          last_credit_refresh: new Date().toISOString().split('T')[0]
+        }])
+        .select()
+        .single();
+      
+      if (newUser) {
+        setEmail(userEmail);
+        setCredits(newUser.credits);
+        setIsRegistered(true);
+      }
+    }
+  };
 
   const checkUserCredits = async (userEmail) => {
     try {
@@ -163,6 +227,18 @@ export default function Home() {
                     {credits} credits remaining
                   </span>
                 </div>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    setIsRegistered(false);
+                    setEmail('');
+                    setCredits(0);
+                  }}
+                  className="mt-2 text-xs text-gray-300 hover:text-white underline"
+                >
+                  Sign out
+                </button>
               </div>
             )}
           </div>
@@ -175,33 +251,114 @@ export default function Home() {
           <div className="max-w-md mx-auto mt-12">
             <div className="bg-white border-2 border-gray-800 shadow-xl p-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Get Started
+                Enjoy reading any text in the language you are studying!
               </h2>
+              <p className="text-xl text-gray-800 mb-4">
+                For every level!
+              </p>
               <p className="text-gray-700 mb-6">
-                Sign up to receive <strong>6 free credits</strong> immediately, plus <strong>2 credits daily</strong> forever.
+                Make everything a learning material, read what really interests you - but in a simplified language.
               </p>
+              <div className="bg-gray-50 border-l-4 border-gray-600 p-4 mb-6">
+                <p className="text-sm text-gray-800">
+                  Get <strong>6 free credits</strong> immediately, plus <strong>2 credits daily</strong> forever.
+                </p>
+              </div>
               
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full p-3 border-2 border-gray-300 text-black focus:border-gray-600 focus:outline-none mb-2"
-              />
-              <p className="text-sm text-gray-600 mb-4">
-                We&#39;ll only use this to save your credits and progress.
-              </p>
+              {/* Social Login with Supabase Auth UI */}
+              <div className="mb-6">
+                <Auth
+                  supabaseClient={supabase}
+                  appearance={{
+                    theme: ThemeSupa,
+                    variables: {
+                      default: {
+                        colors: {
+                          brand: '#111827',
+                          brandAccent: '#1f2937',
+                        },
+                      },
+                    },
+                    className: {
+                      container: 'auth-container',
+                      button: 'auth-button',
+                      divider: 'my-4',
+                    },
+                  }}
+                  providers={['google', 'facebook']}
+                  redirectTo={typeof window !== 'undefined' ? window.location.origin : ''}
+                  onlyThirdPartyProviders={false}
+                  view="magic_link"
+                  showLinks={false}
+                  localization={{
+                    variables: {
+                      magic_link: {
+                        email_input_label: 'Email Address',
+                        email_input_placeholder: 'you@example.com',
+                        button_label: 'Start Learning with Email →',
+                        loading_button_label: 'Sending magic link...',
+                        link_text: ''
+                      },
+                    },
+                  }}
+                />
+              </div>
               
-              <button
-                onClick={handleRegister}
-                className="w-full bg-gray-900 text-white font-bold py-3 hover:bg-gray-800 transition-colors"
-              >
-                Start Learning →
-              </button>
+              <style jsx global>{`
+                .auth-container {
+                  width: 100%;
+                }
+                .auth-container button {
+                  width: 100%;
+                  padding: 0.75rem;
+                  font-weight: bold;
+                  border: 2px solid #e5e7eb;
+                  transition: all 0.2s;
+                }
+                .auth-container button:hover {
+                  background-color: #f9fafb;
+                  border-color: #6b7280;
+                }
+                .auth-container [data-supabase-auth-ui_button] {
+                  background-color: #111827;
+                  color: white;
+                }
+                .auth-container [data-supabase-auth-ui_button]:hover {
+                  background-color: #1f2937;
+                }
+                .auth-container input {
+                  width: 100%;
+                  padding: 0.75rem;
+                  border: 2px solid #d1d5db;
+                  color: black;
+                  background-color: white;
+                }
+                .auth-container input:focus {
+                  border-color: #4b5563;
+                  outline: none;
+                }
+                .auth-container .supabase-auth-ui_ui-divider {
+                  margin: 1.5rem 0;
+                  text-align: center;
+                  position: relative;
+                }
+                .auth-container .supabase-auth-ui_ui-divider::before {
+                  content: '';
+                  position: absolute;
+                  top: 50%;
+                  left: 0;
+                  right: 0;
+                  height: 1px;
+                  background: #e5e7eb;
+                }
+                .auth-container .supabase-auth-ui_ui-divider span {
+                  background: white;
+                  padding: 0 1rem;
+                  position: relative;
+                  color: #6b7280;
+                  font-size: 0.875rem;
+                }
+              `}</style>
             </div>
           </div>
         ) : (
@@ -346,6 +503,17 @@ export default function Home() {
             )}
           </>
         )}
+
+        {/* Footer with privacy links */}
+        <footer className="mt-16 pt-8 pb-4 border-t border-gray-200">
+          <div className="text-center text-sm text-gray-600">
+            <a href="/privacy" className="hover:text-gray-900 hover:underline">Privacy Policy</a>
+            <span className="mx-2">•</span>
+            <a href="/delete-account" className="hover:text-gray-900 hover:underline">Data Deletion</a>
+            <span className="mx-2">•</span>
+            <a href="mailto:yaron@ulpan.co.il" className="hover:text-gray-900 hover:underline">Contact</a>
+          </div>
+        </footer>
       </div>
     </main>
   );
