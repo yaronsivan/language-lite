@@ -31,6 +31,10 @@ export default function AppPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [showPremiumPopup, setShowPremiumPopup] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showReferralPopup, setShowReferralPopup] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralLink, setReferralLink] = useState('');
+  const [isGeneratingReferral, setIsGeneratingReferral] = useState(false);
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -157,7 +161,7 @@ export default function AppPage() {
     if (isAdapting && !isTyping) {
       interval = setInterval(() => {
         setProcessingWordIndex(prev => (prev + 1) % PROCESSING_WORDS.length);
-      }, 500);
+      }, 2000); // Much slower - 2 seconds per word
     }
     return () => clearInterval(interval);
   }, [isAdapting, isTyping]);
@@ -233,7 +237,7 @@ export default function AppPage() {
   };
 
   const shareToWhatsApp = () => {
-    const text = `Check out this adapted text from Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}`;
+    const text = `Check out this adapted text from Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}\n\nTry it yourself at language-lite.com`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encodedText}`, '_blank');
     setShowShareMenu(false);
@@ -252,8 +256,60 @@ export default function AppPage() {
     setShowShareMenu(false);
   };
 
+  const generateReferralLink = async () => {
+    setIsGeneratingReferral(true);
+    try {
+      const response = await fetch('/api/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          referrerEmail: email,
+          action: 'generate'
+        }),
+      });
+
+      const data = await response.json();
+      if (data.referralCode) {
+        setReferralCode(data.referralCode);
+        setReferralLink(data.shareLink);
+      }
+    } catch (error) {
+      console.error('Error generating referral link:', error);
+    } finally {
+      setIsGeneratingReferral(false);
+    }
+  };
+
+  const shareReferralToWhatsApp = () => {
+    const text = `Hey! I've been using Language Lite to adapt texts to my reading level and it's amazing! 📚✨\n\nYou can try it for free here: ${referralLink}\n\nWhen you sign up, we both get 20 extra credits! 🎉`;
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+  };
+
+  const shareReferralToEmail = () => {
+    const subject = encodeURIComponent('Try Language Lite - Get Free Credits!');
+    const body = encodeURIComponent(`Hi!\n\nI've been using Language Lite to adapt texts to my reading level and it's fantastic!\n\nYou can try it for free here: ${referralLink}\n\nWhen you sign up using this link, we both get 20 extra credits!\n\nCheck it out: language-lite.com`);
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+  };
+
+  const copyReferralLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      alert('Referral link copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy link: ', err);
+    }
+  };
+
   const renderHighlightedText = (text, vocabulary) => {
-    if (!vocabulary || vocabulary.length === 0) return text;
+    if (!vocabulary || vocabulary.length === 0) {
+      // Split by double line breaks to preserve paragraphs
+      return text.split('\n\n').map((paragraph, pIndex) => (
+        <p key={pIndex} className="mb-4 last:mb-0">
+          {paragraph.replace(/\n/g, ' ')}
+        </p>
+      ));
+    }
     
     let result = text;
     const elements = [];
@@ -301,7 +357,63 @@ export default function AppPage() {
       elements.push(result.substring(lastIndex));
     }
     
-    return elements;
+    // Convert the elements array to text, then split by paragraphs
+    const fullText = elements.map(el => typeof el === 'string' ? el : el.props.children[0].props.children).join('');
+    const paragraphs = fullText.split('\n\n');
+    
+    // Re-process each paragraph to maintain highlights
+    return paragraphs.map((paragraph, pIndex) => {
+      const paragraphElements = [];
+      let paragraphLastIndex = 0;
+      
+      vocabulary.forEach((item, idx) => {
+        const word = typeof item === 'string' ? item : item.word;
+        const translation = typeof item === 'string' ? word : item.translation;
+        const index = paragraph.toLowerCase().indexOf(word.toLowerCase(), paragraphLastIndex);
+        
+        if (index !== -1) {
+          // Add text before highlight
+          if (index > paragraphLastIndex) {
+            paragraphElements.push(paragraph.substring(paragraphLastIndex, index));
+          }
+          
+          // Add highlighted word
+          paragraphElements.push(
+            <span 
+              key={`p${pIndex}-${idx}`}
+              className="relative inline-block"
+              onMouseEnter={() => setActiveTooltip(`p${pIndex}-${idx}`)}
+              onMouseLeave={() => setActiveTooltip(null)}
+            >
+              <span className="bg-yellow-200 px-1 rounded cursor-pointer">
+                {paragraph.substring(index, index + word.length)}
+              </span>
+              {activeTooltip === `p${pIndex}-${idx}` && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm whitespace-nowrap z-10 font-sans">
+                  {translation}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                    <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </div>
+              )}
+            </span>
+          );
+          
+          paragraphLastIndex = index + word.length;
+        }
+      });
+      
+      // Add remaining text in paragraph
+      if (paragraphLastIndex < paragraph.length) {
+        paragraphElements.push(paragraph.substring(paragraphLastIndex));
+      }
+      
+      return (
+        <p key={pIndex} className="mb-4 last:mb-0">
+          {paragraphElements.length > 0 ? paragraphElements : paragraph.replace(/\n/g, ' ')}
+        </p>
+      );
+    });
   };
 
   const handleAdapt = async () => {
@@ -404,8 +516,16 @@ export default function AppPage() {
 
           {/* Right: Send to Friend + Menu */}
           <div className="flex items-center gap-4">
-            <button className="text-sm text-gray-700 hover:text-gray-900 underline">
-              Send to a friend and get more credits
+            <button 
+              onClick={() => {
+                setShowReferralPopup(true);
+                if (!referralLink) {
+                  generateReferralLink();
+                }
+              }}
+              className="text-sm text-gray-700 hover:text-gray-900 underline"
+            >
+              Share & Earn Credits
             </button>
             
             {/* Hamburger Menu */}
@@ -427,28 +547,28 @@ export default function AppPage() {
                       onClick={() => setShowPremiumPopup(true)}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>Personalize the level</span>
+                      <span>Adaptive Learning Path</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => setShowPremiumPopup(true)}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>My texts</span>
+                      <span>Custom Reading Library</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => setShowPremiumPopup(true)}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>My vocabulary</span>
+                      <span>Word Mastery Vault</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => setShowPremiumPopup(true)}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>Get browser extension</span>
+                      <span>Learn Everywhere</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
@@ -477,13 +597,13 @@ export default function AppPage() {
         </div>
       </div>
       
-      <div className={`flex transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
+      <div className={`flex flex-col lg:flex-row transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
         {/* Left Side - Input */}
-        <div className={`${isAnimating ? 'w-1/3' : 'w-full'} p-8 transition-all duration-700`}>
+        <div className={`${isAnimating ? 'lg:w-1/3 w-full' : 'w-full'} p-4 lg:p-8 transition-all duration-700`}>
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-left mb-8">
-              <h2 className="text-lg text-gray-700 font-light">adapt any text to your level of reading</h2>
+              <h2 className="text-lg text-gray-700 font-light uppercase tracking-wide">ADAPT ANY TEXT TO YOUR LEVEL OF READING:</h2>
             </div>
 
             {/* Text Input */}
@@ -500,7 +620,7 @@ export default function AppPage() {
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
               <div className="flex-1 min-w-0">
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
                   {getTranslation('targetLanguage')}
@@ -668,10 +788,14 @@ export default function AppPage() {
                       dir={RTL_LANGUAGES.includes(lastAdaptedLanguage) ? 'rtl' : 'ltr'}
                     >
                       {isTyping ? (
-                        <span>
-                          {typedText}
+                        <div>
+                          {typedText.split('\n\n').map((paragraph, pIndex) => (
+                            <p key={pIndex} className="mb-4 last:mb-0">
+                              {paragraph.replace(/\n/g, ' ')}
+                            </p>
+                          ))}
                           <span className="animate-pulse">|</span>
-                        </span>
+                        </div>
                       ) : (
                         renderHighlightedText(adaptedResult.adaptedText, adaptedResult.vocabulary)
                       )}
@@ -738,6 +862,67 @@ export default function AppPage() {
           </div>
         )}
       </div>
+
+      {/* Referral Popup */}
+      {showReferralPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4">
+            <div className="text-center">
+              <div className="text-4xl mb-4">🎁</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Share & Earn Credits</h3>
+              <p className="text-gray-600 mb-6">
+                Share Language Lite with friends and earn 20 credits when they sign up!
+              </p>
+              
+              {isGeneratingReferral ? (
+                <div className="mb-6">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500 mx-auto mb-2"></div>
+                  <p className="text-gray-500">Generating your referral link...</p>
+                </div>
+              ) : referralLink ? (
+                <div className="mb-6">
+                  <div className="bg-gray-100 p-3 rounded border mb-4">
+                    <p className="text-xs text-gray-600 mb-1">Your referral link:</p>
+                    <p className="text-sm font-mono break-all">{referralLink}</p>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={shareReferralToWhatsApp}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                    >
+                      <span>📱</span> Share on WhatsApp
+                    </button>
+                    <button
+                      onClick={shareReferralToEmail}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      <span>📧</span> Share via Email
+                    </button>
+                    <button
+                      onClick={copyReferralLink}
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    >
+                      <span>📋</span> Copy Link
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <p className="text-red-500">Failed to generate referral link. Please try again.</p>
+                </div>
+              )}
+              
+              <button
+                onClick={() => setShowReferralPopup(false)}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Premium Feature Popup */}
       {showPremiumPopup && (

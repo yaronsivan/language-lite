@@ -30,6 +30,13 @@ export default function HomePage() {
       })
       .catch(err => console.error('Error loading demo content:', err));
 
+    // Check for referral code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('ref');
+    if (referralCode) {
+      localStorage.setItem('referralCode', referralCode);
+    }
+
     // Check if user is already authenticated
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -40,8 +47,26 @@ export default function HomePage() {
     checkAuth();
 
     // Listen for auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user && event === 'SIGNED_IN') {
+        // Handle referral claim if there's a stored referral code
+        const storedReferralCode = localStorage.getItem('referralCode');
+        if (storedReferralCode) {
+          try {
+            await fetch('/api/referral', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'claim',
+                referralCode: storedReferralCode,
+                newUserEmail: session.user.email
+              }),
+            });
+            localStorage.removeItem('referralCode'); // Clean up
+          } catch (error) {
+            console.error('Error claiming referral:', error);
+          }
+        }
         window.location.href = '/app';
       }
     });
