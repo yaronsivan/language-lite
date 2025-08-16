@@ -10,6 +10,8 @@ const LANGUAGES = [
   'Indonesian', 'Malay', 'Tagalog', 'Swahili', 'Yoruba', 'Zulu', 'Amharic', 'English'
 ];
 
+const RTL_LANGUAGES = ['Hebrew', 'Arabic', 'Urdu', 'Persian'];
+
 const PROCESSING_WORDS = ['Reading', 'Analyzing', 'Modifying', 'Reviewing', 'Adapting', 'Highlighting'];
 
 export default function AppPage() {
@@ -19,6 +21,7 @@ export default function AppPage() {
   const [text, setText] = useState('');
   const [language, setLanguage] = useState('Spanish');
   const [level, setLevel] = useState('Beginner');
+  const [motherTongue, setMotherTongue] = useState('English');
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -153,7 +156,7 @@ export default function AppPage() {
         clearInterval(typeInterval);
         setIsTyping(false);
       }
-    }, 20); // Fast typing effect
+    }, 5); // Very fast typing effect
   };
 
   const copyToClipboard = async (text, type) => {
@@ -213,7 +216,7 @@ export default function AppPage() {
               {result.substring(index, index + word.length)}
             </span>
             {activeTooltip === idx && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap z-10">
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm whitespace-nowrap z-10 font-sans">
                 {translation}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
                   <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
@@ -322,10 +325,10 @@ export default function AppPage() {
     <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
       <div className={`flex transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
         {/* Left Side - Input */}
-        <div className={`${isAnimating ? 'w-2/3' : 'w-full'} p-8 transition-all duration-700`}>
+        <div className={`${isAnimating ? 'w-1/3' : 'w-full'} p-8 transition-all duration-700`}>
           <div className="max-w-4xl mx-auto">
             {/* User Info Bar */}
-            <div className="bg-yellow-100 p-3 mb-6">
+            <div className="bg-orange-500 bg-opacity-20 p-3 mb-6 -m-8 mb-2">
               <div className="flex justify-center items-center gap-6 text-sm">
                 <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
                 <span className="bg-gray-900 text-white px-3 py-1 font-semibold">
@@ -395,10 +398,24 @@ export default function AppPage() {
                   <option value="Advanced">Advanced</option>
                 </select>
               </div>
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  My Mother Tongue
+                </label>
+                <select
+                  value={motherTongue}
+                  onChange={(e) => setMotherTongue(e.target.value)}
+                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
+                >
+                  {LANGUAGES.map(lang => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Adapt Button */}
-            <div className="text-center">
+            <div className="text-right">
               <button
                 onClick={handleAdapt}
                 disabled={isAdapting || credits <= 0 || !text.trim()}
@@ -416,24 +433,18 @@ export default function AppPage() {
 
         {/* Right Side - Results */}
         {isAnimating && (
-          <div className="w-1/3 p-8 bg-[#e8e9eb] transition-all duration-700">
+          <div className="w-2/3 p-8 bg-[#e8e9eb] transition-all duration-700">
             <div className="max-w-3xl">
               {!adaptedResult ? (
                 // Processing Animation
                 <div className="flex items-center justify-center h-64">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-gray-700 mb-4">
-                      {PROCESSING_WORDS[processingWordIndex]}...
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg text-gray-700 font-bodoni">
+                      {PROCESSING_WORDS[processingWordIndex]}
                     </div>
-                    <div className="flex space-x-2 justify-center">
-                      {[...Array(3)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-3 h-3 bg-gray-700 rounded-full animate-bounce"
-                          style={{ animationDelay: `${i * 0.1}s` }}
-                        />
-                      ))}
-                    </div>
+                    <svg className="w-5 h-5 text-gray-700 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                    </svg>
                   </div>
                 </div>
               ) : (
@@ -468,7 +479,10 @@ export default function AppPage() {
                         )}
                       </button>
                     </div>
-                    <div className="font-bodoni text-lg leading-relaxed text-gray-800">
+                    <div 
+                      className="font-bodoni text-lg leading-relaxed text-gray-800"
+                      dir={RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr'}
+                    >
                       {isTyping ? (
                         <span>
                           {typedText}
