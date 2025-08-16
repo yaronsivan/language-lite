@@ -26,6 +26,11 @@ export default function AppPage() {
   const [lastAdaptedLanguage, setLastAdaptedLanguage] = useState('Spanish');
   const [lastAdaptedLevel, setLastAdaptedLevel] = useState('Beginner');
   const [translations, setTranslations] = useState(null);
+  const [motivationalQuotes, setMotivationalQuotes] = useState(null);
+  const [currentQuote, setCurrentQuote] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
+  const [showPremiumPopup, setShowPremiumPopup] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -106,8 +111,9 @@ export default function AppPage() {
     };
   }, [handleAuthUser]);
 
-  // Load translations
+  // Load translations and motivational quotes
   useEffect(() => {
+    // Load translations
     fetch('/translations.yaml')
       .then(res => res.text())
       .then(text => {
@@ -115,7 +121,25 @@ export default function AppPage() {
         setTranslations(content);
       })
       .catch(err => console.error('Error loading translations:', err));
+
+    // Load motivational quotes
+    fetch('/motivational-quotes.yaml')
+      .then(res => res.text())
+      .then(text => {
+        const content = yaml.load(text);
+        setMotivationalQuotes(content);
+      })
+      .catch(err => console.error('Error loading motivational quotes:', err));
   }, []);
+
+  // Update motivational quote during processing
+  useEffect(() => {
+    if (isAdapting && motivationalQuotes && !isTyping) {
+      const quotes = motivationalQuotes.quotes[motherTongue] || motivationalQuotes.quotes.English;
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      setCurrentQuote(randomQuote);
+    }
+  }, [isAdapting, motivationalQuotes, motherTongue, processingWordIndex, isTyping]);
 
   // Load user preferences or demo defaults
   useEffect(() => {
@@ -206,6 +230,26 @@ export default function AppPage() {
       result += `${word}\t${translation}\n`;
     });
     return result;
+  };
+
+  const shareToWhatsApp = () => {
+    const text = `Check out this adapted text from Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}`;
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+    setShowShareMenu(false);
+  };
+
+  const shareToEmail = () => {
+    const subject = encodeURIComponent('Adapted Text from Language Lite');
+    const body = encodeURIComponent(`I adapted this text using Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}\n\nCheck out Language Lite at language-lite.com`);
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    setShowShareMenu(false);
+  };
+
+  const shareToTwitter = () => {
+    const text = encodeURIComponent(`Just adapted text to my learning level with Language Lite! 📚✨ Check it out: language-lite.com`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    setShowShareMenu(false);
   };
 
   const renderHighlightedText = (text, vocabulary) => {
@@ -347,23 +391,89 @@ export default function AppPage() {
 
   return (
     <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
-      {/* User Info Bar */}
+      {/* Top Navigation Bar */}
       <div className="bg-[#ffb238] bg-opacity-80 p-3">
-        <div className="flex justify-center items-center gap-6 text-sm">
-          <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
-          <span className="bg-gray-900 text-white px-3 py-1 font-semibold">
-            {credits} credits remaining
-          </span>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              localStorage.removeItem('userEmail');
-              window.location.href = '/';
-            }}
-            className="text-gray-700 hover:text-gray-900 underline"
-          >
-            Sign out
-          </button>
+        <div className="flex justify-between items-center">
+          {/* Left: Language Lite + Credits */}
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-gray-900 font-zain">Language Lite</h1>
+            <span className="bg-gray-900 text-white px-3 py-1 text-sm font-semibold">
+              {credits} credits remaining
+            </span>
+          </div>
+
+          {/* Right: Send to Friend + Menu */}
+          <div className="flex items-center gap-4">
+            <button className="text-sm text-gray-700 hover:text-gray-900 underline">
+              Send to a friend and get more credits
+            </button>
+            
+            {/* Hamburger Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              
+              {/* Dropdown Menu */}
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border z-50">
+                  <div className="py-2">
+                    <button 
+                      onClick={() => setShowPremiumPopup(true)}
+                      className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <span>Personalize the level</span>
+                      <span className="text-yellow-500">👑</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowPremiumPopup(true)}
+                      className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <span>My texts</span>
+                      <span className="text-yellow-500">👑</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowPremiumPopup(true)}
+                      className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <span>My vocabulary</span>
+                      <span className="text-yellow-500">👑</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowPremiumPopup(true)}
+                      className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
+                    >
+                      <span>Get browser extension</span>
+                      <span className="text-yellow-500">👑</span>
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button 
+                      onClick={() => window.location.href = '/upgrade'}
+                      className="w-full px-4 py-2 text-left text-gray-900 hover:bg-gray-50 font-medium"
+                    >
+                      Upgrade
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        localStorage.removeItem('userEmail');
+                        window.location.href = '/';
+                      }}
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       
@@ -373,10 +483,7 @@ export default function AppPage() {
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-left mb-8">
-              <h1 className="mb-4">
-                <span className="text-5xl font-bold text-gray-900 font-zain block">Language Lite</span>
-                <span className="text-lg text-gray-700 font-light">adapt any text to your level of reading</span>
-              </h1>
+              <h2 className="text-lg text-gray-700 font-light">adapt any text to your level of reading</h2>
             </div>
 
             {/* Text Input */}
@@ -396,7 +503,7 @@ export default function AppPage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <div className="flex-1 min-w-0">
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Target Language
+                  {getTranslation('targetLanguage')}
                 </label>
                 <select 
                   value={language}
@@ -410,7 +517,7 @@ export default function AppPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Your Level
+                  {getTranslation('yourLevel')}
                 </label>
                 <select
                   value={level}
@@ -424,7 +531,7 @@ export default function AppPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  My Mother Tongue
+                  {getTranslation('motherTongue')}
                 </label>
                 <select
                   value={motherTongue}
@@ -449,7 +556,7 @@ export default function AppPage() {
                     : 'bg-gray-900 text-white hover:bg-gray-800'
                 }`}
               >
-                {isAdapting ? 'Adapting...' : 'Adapt Text'}
+                {isAdapting ? getTranslation('adapting') : getTranslation('adaptText')}
               </button>
             </div>
 
@@ -467,8 +574,8 @@ export default function AppPage() {
             <div className="max-w-3xl">
               {!adaptedResult ? (
                 // Processing Animation
-                <div className="flex items-center justify-center h-64">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center justify-center h-64">
+                  <div className="flex items-center gap-3 mb-6">
                     <div className="text-lg text-gray-700 font-bodoni">
                       {PROCESSING_WORDS[processingWordIndex]}
                     </div>
@@ -476,6 +583,13 @@ export default function AppPage() {
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                     </svg>
                   </div>
+                  {currentQuote && (
+                    <div className="text-center px-6 max-w-md">
+                      <p className="text-sm text-gray-600 italic">
+                        &ldquo;{currentQuote}&rdquo;
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 // Results
@@ -486,28 +600,68 @@ export default function AppPage() {
                       <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                         {getTranslation('adaptedText')} ({lastAdaptedLanguage} - {lastAdaptedLevel})
                       </span>
-                      <button
-                        onClick={() => copyToClipboard(adaptedResult.adaptedText, 'text')}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-                        title="Copy adapted text"
-                      >
-                        {copiedText ? (
-                          <>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => copyToClipboard(adaptedResult.adaptedText, 'text')}
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                          title="Copy adapted text"
+                        >
+                          {copiedText ? (
+                            <>
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                              </svg>
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                        
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowShareMenu(!showShareMenu)}
+                            className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                            title="Share adapted text"
+                          >
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                              <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
                             </svg>
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
-                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
-                            </svg>
-                            Copy
-                          </>
-                        )}
-                      </button>
+                            Share
+                          </button>
+                          
+                          {showShareMenu && (
+                            <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border z-50">
+                              <div className="py-1">
+                                <button
+                                  onClick={() => shareToWhatsApp()}
+                                  className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                >
+                                  <span className="text-green-600">📱</span> WhatsApp
+                                </button>
+                                <button
+                                  onClick={() => shareToEmail()}
+                                  className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                >
+                                  <span className="text-blue-600">📧</span> Email
+                                </button>
+                                <button
+                                  onClick={() => shareToTwitter()}
+                                  className="w-full px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                >
+                                  <span className="text-blue-400">🐦</span> Twitter
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                     <div 
                       className="font-bodoni text-lg leading-relaxed text-gray-800"
@@ -584,6 +738,46 @@ export default function AppPage() {
           </div>
         )}
       </div>
+
+      {/* Premium Feature Popup */}
+      {showPremiumPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4">
+            <div className="text-center">
+              <div className="text-4xl mb-4">👑</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Premium Features</h3>
+              <p className="text-gray-600 mb-6">
+                For just $1 a month, get access to all these premium features and more:
+              </p>
+              <ul className="text-left text-gray-700 mb-6 space-y-2">
+                <li>• Personalized level assessments</li>
+                <li>• Save and organize your texts</li>
+                <li>• Personal vocabulary collection</li>
+                <li>• Browser extension</li>
+                <li>• Advanced analytics</li>
+                <li>• Priority support</li>
+              </ul>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowPremiumPopup(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Maybe Later
+                </button>
+                <button
+                  onClick={() => {
+                    setShowPremiumPopup(false);
+                    window.location.href = '/upgrade';
+                  }}
+                  className="flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium"
+                >
+                  Upgrade Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Zain:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&display=swap');

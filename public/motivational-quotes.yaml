@@ -1,0 +1,122 @@
+# Motivational language learning quotes in different languages
+
+quotes:
+  English:
+    - "Every word you learn opens a new door to the world"
+    - "Language is the bridge between cultures"
+    - "Progress, not perfection, is the goal"
+    - "You're building connections across continents"
+    - "Each sentence brings you closer to fluency"
+    - "Learning a language is learning to think differently"
+
+  Spanish:
+    - "Cada palabra que aprendes abre una nueva puerta al mundo"
+    - "El idioma es el puente entre culturas"
+    - "El progreso, no la perfección, es la meta"
+    - "Estás construyendo conexiones entre continentes"
+    - "Cada oración te acerca más a la fluidez"
+    - "Aprender un idioma es aprender a pensar diferente"
+
+  French:
+    - "Chaque mot que vous apprenez ouvre une nouvelle porte sur le monde"
+    - "La langue est le pont entre les cultures"
+    - "Le progrès, pas la perfection, est l'objectif"
+    - "Vous construisez des connexions entre les continents"
+    - "Chaque phrase vous rapproche de la maîtrise"
+    - "Apprendre une langue, c'est apprendre à penser différemment"
+
+  German:
+    - "Jedes Wort, das du lernst, öffnet eine neue Tür zur Welt"
+    - "Sprache ist die Brücke zwischen Kulturen"
+    - "Fortschritt, nicht Perfektion, ist das Ziel"
+    - "Du baust Verbindungen zwischen Kontinenten auf"
+    - "Jeder Satz bringt dich der Flüssigkeit näher"
+    - "Eine Sprache zu lernen bedeutet, anders zu denken"
+
+  Italian:
+    - "Ogni parola che impari apre una nuova porta al mondo"
+    - "La lingua è il ponte tra le culture"
+    - "Il progresso, non la perfezione, è l'obiettivo"
+    - "Stai costruendo connessioni tra continenti"
+    - "Ogni frase ti avvicina alla fluenza"
+    - "Imparare una lingua significa imparare a pensare diversamente"
+
+  Portuguese:
+    - "Cada palavra que você aprende abre uma nova porta para o mundo"
+    - "A linguagem é a ponte entre culturas"
+    - "O progresso, não a perfeição, é o objetivo"
+    - "Você está construindo conexões entre continentes"
+    - "Cada frase te aproxima da fluência"
+    - "Aprender um idioma é aprender a pensar diferente"
+
+  Hebrew:
+    - "כל מילה שאתה לומד פותחת דלת חדשה לעולם"
+    - "השפה היא הגשר בין תרבויות"
+    - "התקדמות, לא שלמות, היא המטרה"
+    - "אתה בונה קשרים בין יבשות"
+    - "כל משפט מקרב אותך לשטף"
+    - "ללמוד שפה זה ללמוד לחשוב אחרת"
+
+  Arabic:
+    - "كل كلمة تتعلمها تفتح بابًا جديدًا للعالم"
+    - "اللغة هي الجسر بين الثقافات"
+    - "التقدم وليس الكمال هو الهدف"
+    - "أنت تبني روابط عبر القارات"
+    - "كل جملة تقربك من الطلاقة"
+    - "تعلم لغة هو تعلم طريقة تفكير جديدة"
+
+  Russian:
+    - "Каждое слово, которое вы изучаете, открывает новую дверь в мир"
+    - "Язык - это мост между культурами"
+    - "Прогресс, а не совершенство, - вот цель"
+    - "Вы строите связи между континентами"
+    - "Каждое предложение приближает вас к беглости"
+    - "Изучение языка - это изучение нового способа мышления"
+
+  Chinese (Simplified):
+    - "你学的每个单词都为世界打开一扇新门"
+    - "语言是文化之间的桥梁"
+    - "进步，而非完美，才是目标"
+    - "你正在建立跨洲的联系"
+    - "每个句子都让你更接近流利"
+    - "学习语言就是学习不同的思维方式"
+
+  Japanese:
+    - "学ぶ一つ一つの言葉が世界への新しい扉を開く"
+    - "言語は文化間の架け橋です"
+    - "完璧ではなく、進歩が目標です"
+    - "大陸間のつながりを築いています"
+    - "一つ一つの文が流暢さに近づけます"
+    - "言語を学ぶことは異なる思考を学ぶこと"
+
+  Dutch:
+    - "Elk woord dat je leert opent een nieuwe deur naar de wereld"
+    - "Taal is de brug tussen culturen"
+    - "Vooruitgang, niet perfectie, is het doel"
+    - "Je bouwt verbindingen tussen continenten"
+    - "Elke zin brengt je dichter bij vloeiendheid"
+    - "Een taal leren is leren anders te denken"
+
+  Polish:
+    - "Każde słowo, którego się uczysz, otwiera nowe drzwi do świata"
+    - "Język to most między kulturami"
+    - "Postęp, nie perfekcja, to cel"
+    - "Budujesz połączenia między kontynentami"
+    - "Każde zdanie przybliża cię do płynności"
+    - "Nauka języka to nauka myślenia w inny sposób"
+
+  Turkish:
+    - "Öğrendiğiniz her kelime dünyaya yeni bir kapı açar"
+    - "Dil, kültürler arasındaki köprüdür"
+    - "Hedef mükemmellik değil, ilerlemedir"
+    - "Kıtalar arası bağlantılar kuruyorsunuz"
+    - "Her cümle sizi akıcılığa yaklaştırır"
+    - "Bir dil öğrenmek farklı düşünmeyi öğrenmektir"
+
+  Korean:
+    - "배우는 모든 단어가 세상으로 가는 새로운 문을 열어줍니다"
+    - "언어는 문화 간의 다리입니다"
+    - "완벽이 아닌 진보가 목표입니다"
+    - "대륙 간의 연결을 구축하고 있습니다"
+    - "모든 문장이 유창함에 가까워지게 합니다"
+    - "언어를 배우는 것은 다르게 생각하는 법을 배우는 것입니다"
