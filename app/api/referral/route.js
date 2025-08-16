@@ -25,9 +25,14 @@ export async function POST(request) {
         return Response.json({ error: 'Failed to create referral' }, { status: 500 });
       }
 
+      // Use environment-appropriate base URL
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://language-lite.com' 
+        : 'http://localhost:3000';
+      
       return Response.json({ 
         referralCode,
-        shareLink: `https://language-lite.com?ref=${referralCode}`
+        shareLink: `${baseUrl}?ref=${referralCode}`
       });
     }
 

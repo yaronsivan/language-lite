@@ -13,9 +13,17 @@ async function getOrchestrator() {
 
 export async function POST(request) {
   try {
-    const { text, language, level, motherTongue = 'English' } = await request.json();
+    const requestBody = await request.json();
+    const { text, language, level, motherTongue = 'English' } = requestBody;
 
     console.log(`Processing text adaptation: ${language} ${level}, Mother tongue: ${motherTongue}`);
+    console.log('Request details:', {
+      textLength: text?.length,
+      language,
+      level,
+      motherTongue,
+      textPreview: text?.substring(0, 50)
+    });
     
     // Get the orchestrator instance
     const orch = await getOrchestrator();

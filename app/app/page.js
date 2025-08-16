@@ -447,6 +447,11 @@ export default function AppPage() {
 
       const data = await response.json();
       
+      // Check if the response was successful
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP error! status: ${response.status}`);
+      }
+      
       // Start typewriter effect
       setTimeout(() => {
         typewriterEffect(data.adaptedText);
@@ -483,8 +488,13 @@ export default function AppPage() {
         }]);
 
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to adapt text. Please try again.');
+      console.error('Error in handleAdapt:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        requestData: { text: text.substring(0, 100), language, level, motherTongue }
+      });
+      alert(`Failed to adapt text: ${error.message}`);
     } finally {
       setTimeout(() => {
         setIsAdapting(false);

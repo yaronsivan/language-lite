@@ -237,7 +237,7 @@ export default function HomePage() {
                 },
               }}
               providers={['google', 'facebook']}
-              redirectTo="https://language-lite.com"
+              redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/app` : 'https://language-lite.com/app'}
               onlyThirdPartyProviders={true}
               view="sign_in"
               showLinks={false}
