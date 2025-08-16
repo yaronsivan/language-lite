@@ -514,7 +514,7 @@ export default function AppPage() {
   return (
     <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
       {/* Top Navigation Bar */}
-      <div className="bg-[#ffb238] bg-opacity-80 p-3">
+      <div className="bg-[#ffb238] bg-opacity-80 p-3 sticky top-0 z-40">
         <div className="flex justify-between items-center">
           {/* Left: Language Lite + Credits */}
           <div className="flex items-center gap-4">
@@ -690,18 +690,13 @@ export default function AppPage() {
               </button>
             </div>
 
-            {/* Footer Links */}
-            <div className="absolute bottom-4 left-8 text-xs text-gray-600 space-x-4">
-              <a href="/privacy" className="hover:text-gray-800 underline">Privacy Policy</a>
-              <a href="/delete-account" className="hover:text-gray-800 underline">Data Deletion</a>
-            </div>
           </div>
         </div>
 
         {/* Right Side - Results */}
         {isAnimating && (
-          <div className="w-2/3 p-8 bg-[#e8e9eb] transition-all duration-700">
-            <div className="max-w-3xl">
+          <div className="lg:w-2/3 w-full p-4 lg:p-8 bg-[#e8e9eb] transition-all duration-700">
+            <div className="lg:max-w-3xl">
               {!adaptedResult ? (
                 // Processing Animation
                 <div className="flex flex-col items-center justify-center h-64">
@@ -973,6 +968,14 @@ export default function AppPage() {
           </div>
         </div>
       )}
+
+      {/* Footer Links */}
+      <div className="w-full bg-[#ffb238] p-4 text-center">
+        <div className="text-xs text-gray-600 space-x-4">
+          <a href="/privacy" className="hover:text-gray-800 underline">Privacy Policy</a>
+          <a href="/delete-account" className="hover:text-gray-800 underline">Data Deletion</a>
+        </div>
+      </div>
 
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Zain:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&display=swap');
