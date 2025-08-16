@@ -1,8 +1,6 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 const LANGUAGES = [
   'Hebrew', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Polish', 'Russian',
@@ -12,87 +10,94 @@ const LANGUAGES = [
   'Indonesian', 'Malay', 'Tagalog', 'Swahili', 'Yoruba', 'Zulu', 'Amharic', 'English'
 ];
 
-// Demo content for split-screen showcase
-const DEMO_CONTENT = {
-  original: {
-    text: "Recent technological breakthroughs in artificial intelligence have revolutionized numerous industries, fundamentally transforming how businesses operate and consumers interact with digital platforms.",
-    wordCount: 24,
-    complexity: "Advanced"
-  },
-  adapted: {
-    Spanish: {
-      Beginner: {
-        text: "Los nuevos avances en inteligencia artificial han cambiado muchas industrias. Ahora las empresas trabajan de manera diferente y las personas usan las plataformas digitales de forma nueva.",
-        vocabulary: [
-          { word: "avances", translation: "advances" },
-          { word: "inteligencia artificial", translation: "artificial intelligence" },
-          { word: "industrias", translation: "industries" },
-          { word: "empresas", translation: "businesses" }
-        ],
-        wordCount: 29,
-        complexity: "Beginner"
-      },
-      Intermediate: {
-        text: "Los recientes avances tecnológicos en inteligencia artificial han revolucionado numerosas industrias, transformando fundamentalmente cómo operan las empresas y cómo los consumidores interactúan con plataformas digitales.",
-        vocabulary: [
-          { word: "avances tecnológicos", translation: "technological advances" },
-          { word: "revolucionado", translation: "revolutionized" },
-          { word: "numerosas", translation: "numerous" },
-          { word: "fundamentalmente", translation: "fundamentally" }
-        ],
-        wordCount: 26,
-        complexity: "Intermediate"
-      }
-    },
-    French: {
-      Beginner: {
-        text: "Les nouvelles technologies d'intelligence artificielle ont changé beaucoup d'industries. Maintenant les entreprises travaillent différemment et les gens utilisent les plateformes numériques d'une nouvelle façon.",
-        vocabulary: [
-          { word: "technologies", translation: "technologies" },
-          { word: "intelligence artificielle", translation: "artificial intelligence" },
-          { word: "industries", translation: "industries" },
-          { word: "entreprises", translation: "businesses" }
-        ],
-        wordCount: 28,
-        complexity: "Beginner"
-      }
-    }
-  }
-};
+const PROCESSING_WORDS = ['Reading', 'Analyzing', 'Modifying', 'Reviewing', 'Adapting', 'Highlighting'];
 
-export default function Home() {
+export default function AppPage() {
   const [email, setEmail] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
   const [credits, setCredits] = useState(0);
   const [text, setText] = useState('');
   const [language, setLanguage] = useState('Spanish');
   const [level, setLevel] = useState('Beginner');
-  const [searchLang, setSearchLang] = useState('');
-  const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [processingWordIndex, setProcessingWordIndex] = useState(0);
+  const [activeTooltip, setActiveTooltip] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typedText, setTypedText] = useState('');
   
-  // Demo state for split-screen
-  const [demoLanguage, setDemoLanguage] = useState('Spanish');
-  const [demoLevel, setDemoLevel] = useState('Beginner');
-  const [showOriginal, setShowOriginal] = useState(true);
+  const typingTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        handleAuthUser(user);
+      } else {
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail) {
+          checkUserCredits(savedEmail);
+        } else {
+          window.location.href = '/';
+        }
+      }
+    };
+
+    initAuth();
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        handleAuthUser(session.user);
+      } else {
+        setIsRegistered(false);
+        setEmail('');
+        setCredits(0);
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  // Load user preferences or demo defaults
+  useEffect(() => {
+    if (isRegistered) {
+      const savedLanguage = localStorage.getItem('lastLanguage') || 'Spanish';
+      const savedLevel = localStorage.getItem('lastLevel') || 'Beginner';
+      setLanguage(savedLanguage);
+      setLevel(savedLevel);
+    }
+  }, [isRegistered]);
+
+  // Processing words animation
+  useEffect(() => {
+    let interval;
+    if (isAdapting && !isTyping) {
+      interval = setInterval(() => {
+        setProcessingWordIndex(prev => (prev + 1) % PROCESSING_WORDS.length);
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [isAdapting, isTyping]);
 
   const handleAuthUser = useCallback(async (user) => {
     const userEmail = user.email;
     
-    // Check if user exists in our users table
     const { data: existingUser } = await supabase
       .from('users')
-      .select('credits')
+      .select('credits, language, level')
       .eq('email', userEmail)
       .single();
 
     if (existingUser) {
       setEmail(userEmail);
       setCredits(existingUser.credits);
+      setLanguage(existingUser.language || 'Spanish');
+      setLevel(existingUser.level || 'Beginner');
       setIsRegistered(true);
     } else {
-      // Create user in our table
       const { data: newUser } = await supabase
         .from('users')
         .insert([{
@@ -113,55 +118,92 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    const initAuth = async () => {
-      // Check for authenticated user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        handleAuthUser(user);
-      } else {
-        // Fallback to old localStorage method
-        const savedEmail = localStorage.getItem('userEmail');
-        if (savedEmail) {
-          checkUserCredits(savedEmail);
-        }
-      }
-    };
-
-    initAuth();
-    
-    // Listen for auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        handleAuthUser(session.user);
-      } else {
-        setIsRegistered(false);
-        setEmail('');
-        setCredits(0);
-      }
-    });
-
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
-  }, [handleAuthUser]);
-
   const checkUserCredits = async (userEmail) => {
     try {
       const { data } = await supabase
         .from('users')
-        .select('credits')
+        .select('credits, language, level')
         .eq('email', userEmail)
         .single();
 
       if (data) {
         setEmail(userEmail);
         setCredits(data.credits);
+        setLanguage(data.language || 'Spanish');
+        setLevel(data.level || 'Beginner');
         setIsRegistered(true);
       }
     } catch (error) {
       console.error('Error checking credits:', error);
     }
+  };
+
+  const typewriterEffect = (text) => {
+    setIsTyping(true);
+    setTypedText('');
+    let index = 0;
+    
+    const typeInterval = setInterval(() => {
+      if (index < text.length) {
+        setTypedText(prev => prev + text[index]);
+        index++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTyping(false);
+      }
+    }, 20); // Fast typing effect
+  };
+
+  const renderHighlightedText = (text, vocabulary) => {
+    if (!vocabulary || vocabulary.length === 0) return text;
+    
+    let result = text;
+    const elements = [];
+    let lastIndex = 0;
+    
+    vocabulary.forEach((item, idx) => {
+      const word = typeof item === 'string' ? item : item.word;
+      const translation = typeof item === 'string' ? word : item.translation;
+      const index = result.toLowerCase().indexOf(word.toLowerCase(), lastIndex);
+      
+      if (index !== -1) {
+        // Add text before highlight
+        if (index > lastIndex) {
+          elements.push(result.substring(lastIndex, index));
+        }
+        
+        // Add highlighted word
+        elements.push(
+          <span 
+            key={idx}
+            className="relative inline-block"
+            onMouseEnter={() => setActiveTooltip(idx)}
+            onMouseLeave={() => setActiveTooltip(null)}
+          >
+            <span className="bg-yellow-200 px-1 rounded cursor-pointer">
+              {result.substring(index, index + word.length)}
+            </span>
+            {activeTooltip === idx && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap z-10">
+                {translation}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                  <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                </div>
+              </div>
+            )}
+          </span>
+        );
+        
+        lastIndex = index + word.length;
+      }
+    });
+    
+    // Add remaining text
+    if (lastIndex < result.length) {
+      elements.push(result.substring(lastIndex));
+    }
+    
+    return elements;
   };
 
   const handleAdapt = async () => {
@@ -175,8 +217,14 @@ export default function Home() {
       return;
     }
 
+    // Save preferences
+    localStorage.setItem('lastLanguage', language);
+    localStorage.setItem('lastLevel', level);
+
     setIsAdapting(true);
+    setIsAnimating(true);
     setAdaptedResult(null);
+    setProcessingWordIndex(0);
 
     try {
       const response = await fetch('/api/adapt', {
@@ -186,7 +234,12 @@ export default function Home() {
       });
 
       const data = await response.json();
-      setAdaptedResult(data);
+      
+      // Start typewriter effect
+      setTimeout(() => {
+        typewriterEffect(data.adaptedText);
+        setAdaptedResult(data);
+      }, 1000);
 
       const newCredits = credits - 1;
       setCredits(newCredits);
@@ -201,6 +254,8 @@ export default function Home() {
         .from('users')
         .update({ 
           credits: newCredits,
+          language,
+          level,
           total_adaptations: (userData?.total_adaptations || 0) + 1
         })
         .eq('email', email);
@@ -219,406 +274,210 @@ export default function Home() {
       console.error('Error:', error);
       alert('Failed to adapt text. Please try again.');
     } finally {
-      setIsAdapting(false);
+      setTimeout(() => {
+        setIsAdapting(false);
+      }, 2000);
     }
   };
 
-  const filteredLanguages = LANGUAGES.filter(lang => 
-    lang.toLowerCase().includes(searchLang.toLowerCase())
-  );
-
-  // Helper function to get demo content
-  const getDemoContent = () => {
-    const adapted = DEMO_CONTENT.adapted[demoLanguage]?.[demoLevel];
-    return adapted || DEMO_CONTENT.adapted.Spanish.Beginner;
-  };
-
-  // Auto-cycle demo text every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowOriginal(prev => !prev);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  if (!isRegistered) {
+    return <div className="min-h-screen bg-[#ffb238] flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+        <p className="text-gray-900">Loading...</p>
+      </div>
+    </div>;
+  }
 
   return (
-    <main className="min-h-screen bg-white">
-      {!isRegistered ? (
-        // New split-screen landing page
-        <div className="min-h-screen flex">
-          {/* Left Panel - Authentication */}
-          <div className="w-2/5 bg-gray-50 flex flex-col justify-center px-8 lg:px-12">
-            <div className="max-w-md mx-auto w-full">
-              {/* Logo & Brand */}
-              <div className="mb-8">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{fontFamily: "'Playfair Display', serif"}}>
-                  Language Lite
-                </h1>
-                <p className="text-xl text-gray-600">
-                  Transform any text into perfect learning material
-                </p>
-              </div>
-
-              {/* Value Props */}
-              <div className="mb-8 space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
-                  <p className="text-gray-700">Read what interests you at your exact level</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
-                  <p className="text-gray-700">Instant vocabulary explanations</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2"></div>
-                  <p className="text-gray-700">35+ languages supported</p>
-                </div>
-              </div>
-
-              {/* Auth Component */}
-              <div className="bg-white border border-gray-200 shadow-lg p-6 rounded-lg">
-                <div className="mb-4">
-                  <div className="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-4">
-                    <p className="text-sm text-indigo-800">
-                      Get <strong>6 free credits</strong> immediately, plus <strong>2 credits daily</strong>
-                    </p>
-                  </div>
-                </div>
-                
-                <Auth
-                  supabaseClient={supabase}
-                  appearance={{
-                    theme: ThemeSupa,
-                    variables: {
-                      default: {
-                        colors: {
-                          brand: '#4f46e5',
-                          brandAccent: '#4338ca',
-                        },
-                      },
-                    },
-                    className: {
-                      container: 'auth-container-new',
-                      button: 'auth-button-new',
-                    },
+    <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
+      <div className={`flex transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
+        {/* Left Side - Input */}
+        <div className={`${isAnimating ? 'w-1/2' : 'w-full'} p-8 transition-all duration-700`}>
+          <div className="max-w-4xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4 font-zain">
+                Language Lite - adapt any text to your level of reading
+              </h1>
+              
+              {/* User Info */}
+              <div className="flex justify-center items-center gap-6 mb-6">
+                <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
+                <span className="bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold">
+                  {credits} credits remaining
+                </span>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    localStorage.removeItem('userEmail');
+                    window.location.href = '/';
                   }}
-                  providers={['google', 'facebook']}
-                  redirectTo="https://language-lite.com"
-                  onlyThirdPartyProviders={false}
-                  view="magic_link"
-                  showLinks={false}
-                  localization={{
-                    variables: {
-                      magic_link: {
-                        email_input_label: 'Email Address',
-                        email_input_placeholder: 'you@example.com',
-                        button_label: 'Start Learning →',
-                        loading_button_label: 'Sending magic link...',
-                        link_text: ''
-                      },
-                    },
-                  }}
+                  className="text-gray-700 hover:text-gray-900 underline"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+
+            {/* Text Input */}
+            <div className="mb-6">
+              <div className="border border-black bg-white p-6">
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  className="w-full h-64 resize-none border-none outline-none font-bodoni text-lg leading-relaxed"
+                  placeholder="Paste here..."
+                  style={{ fontFamily: 'Bodoni Moda, serif' }}
                 />
               </div>
-
-              {/* Trust Indicators */}
-              <div className="mt-6 text-center">
-                <p className="text-xs text-gray-500">
-                  Trusted by 10,000+ language learners worldwide
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Panel - Live Demo */}
-          <div className="w-3/5 bg-gradient-to-br from-indigo-600 to-purple-700 flex flex-col justify-center px-8 lg:px-12 text-white">
-            <div className="max-w-2xl mx-auto w-full">
-              {/* Demo Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold mb-4" style={{fontFamily: "'Playfair Display', serif"}}>
-                  See It In Action
-                </h2>
-                <p className="text-indigo-100 text-lg">
-                  Watch how complex text transforms into perfect learning material
-                </p>
-              </div>
-
-              {/* Language Controls */}
-              <div className="mb-6 flex flex-wrap gap-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex-1 min-w-48">
-                  <label className="block text-sm font-medium text-indigo-100 mb-2">
-                    Learning Language
-                  </label>
-                  <select
-                    value={demoLanguage}
-                    onChange={(e) => setDemoLanguage(e.target.value)}
-                    className="w-full bg-white/20 border border-white/30 rounded-md px-3 py-2 text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  >
-                    <option value="Spanish" className="text-gray-900">🇪🇸 Spanish</option>
-                    <option value="French" className="text-gray-900">🇫🇷 French</option>
-                  </select>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 flex-1 min-w-32">
-                  <label className="block text-sm font-medium text-indigo-100 mb-2">
-                    Your Level
-                  </label>
-                  <select
-                    value={demoLevel}
-                    onChange={(e) => setDemoLevel(e.target.value)}
-                    className="w-full bg-white/20 border border-white/30 rounded-md px-3 py-2 text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  >
-                    <option value="Beginner" className="text-gray-900">Beginner</option>
-                    <option value="Intermediate" className="text-gray-900">Intermediate</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Text Transformation Demo */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    {showOriginal ? 'Original Text (English)' : `Adapted Text (${demoLanguage})`}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full transition-colors ${showOriginal ? 'bg-red-400' : 'bg-green-400'}`}></div>
-                    <span className="text-sm text-indigo-100">
-                      {showOriginal ? 'Complex' : getDemoContent().complexity}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="bg-white/95 rounded-lg p-4 text-gray-900 min-h-24">
-                  <p className="leading-relaxed transition-all duration-500">
-                    {showOriginal ? DEMO_CONTENT.original.text : getDemoContent().text}
-                  </p>
-                </div>
-                
-                <div className="mt-4 flex justify-between items-center text-sm text-indigo-100">
-                  <span>
-                    Words: {showOriginal ? DEMO_CONTENT.original.wordCount : getDemoContent().wordCount}
-                  </span>
-                  <span className="text-yellow-300">
-                    Auto-switching every 3 seconds
-                  </span>
-                </div>
-              </div>
-
-              {/* Vocabulary Preview */}
-              {!showOriginal && getDemoContent().vocabulary && (
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    Key Vocabulary
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {getDemoContent().vocabulary.slice(0, 4).map((word, index) => (
-                      <div key={index} className="bg-yellow-400/20 border border-yellow-400/30 rounded-md p-3">
-                        <div className="font-medium text-yellow-300">{word.word}</div>
-                        <div className="text-sm text-yellow-100">{word.translation}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Call to Action */}
-              <div className="mt-8 text-center">
-                <div className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-lg inline-flex items-center space-x-2 font-semibold">
-                  <span>Start learning with your own text</span>
-                  <span>→</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        // Existing authenticated view
-        <>
-          <header className="bg-gray-900 text-white shadow-lg">
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-2xl font-bold text-white">Language Lite</h1>
-                  <p className="text-gray-300 text-sm">
-                    AI-powered language adaptation
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-300">Logged in as</div>
-                  <div className="font-semibold text-white">{email.split('@')[0]}</div>
-                  <div className="mt-1">
-                    <span className="bg-white text-gray-900 px-3 py-1 font-bold text-sm inline-block">
-                      {credits} credits remaining
-                    </span>
-                  </div>
-                  <button
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      localStorage.removeItem('userEmail');
-                      setIsRegistered(false);
-                      setEmail('');
-                      setCredits(0);
-                    }}
-                    className="mt-2 text-xs text-gray-300 hover:text-white underline"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <div className="container mx-auto px-4 py-8 max-w-4xl">
-            {/* Input Section */}
-            <div className="bg-white border-2 border-gray-200 shadow-lg p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Step 1: Paste Your Text
-              </h2>
-              <p className="text-gray-600 text-sm mb-4">
-                Enter any article, story, or text you want to adapt to your learning level
-              </p>
-              
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                className="w-full p-4 border-2 border-gray-300 text-black bg-gray-50 focus:bg-white focus:border-gray-600 focus:outline-none"
-                rows="6"
-                placeholder="Paste or type your text here..."
-              />
             </div>
 
-            {/* Settings */}
-            <div className="bg-white border-2 border-gray-200 shadow-lg p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Step 2: Choose Your Settings
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Language */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Target Language
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={showLangDropdown ? searchLang : language}
-                      onChange={(e) => setSearchLang(e.target.value)}
-                      onFocus={() => setShowLangDropdown(true)}
-                      placeholder="Type to search..."
-                      className="w-full p-3 border-2 border-gray-300 text-black bg-white focus:border-gray-600 focus:outline-none"
-                    />
-                    {showLangDropdown && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border-2 border-gray-300 shadow-lg max-h-48 overflow-y-auto">
-                        {filteredLanguages.map(lang => (
-                          <button
-                            key={lang}
-                            onClick={() => {
-                              setLanguage(lang);
-                              setShowLangDropdown(false);
-                              setSearchLang('');
-                            }}
-                            className="w-full text-left p-3 text-black hover:bg-gray-100 focus:bg-gray-100"
-                          >
-                            {lang}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Level */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Your Level
-                  </label>
-                  <select
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                    className="w-full p-3 border-2 border-gray-300 text-black bg-white focus:border-gray-600 focus:outline-none"
-                  >
-                    <option>Beginner</option>
-                    <option>Intermediate</option>
-                    <option>Advanced</option>
-                  </select>
-                </div>
+            {/* Controls */}
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Target Language
+                </label>
+                <select 
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
+                >
+                  {LANGUAGES.map(lang => (
+                    <option key={lang} value={lang}>{lang}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Your Level
+                </label>
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
               </div>
             </div>
 
-            {/* Execute Button */}
-            <div className="bg-gray-50 border-2 border-gray-400 shadow-lg p-6 mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Step 3: Adapt Your Text
-              </h2>
-              <p className="text-gray-600 text-sm mb-4">
-                Uses 1 credit • You have {credits} credits remaining
-              </p>
-
+            {/* Adapt Button */}
+            <div className="text-center">
               <button
                 onClick={handleAdapt}
                 disabled={isAdapting || credits <= 0 || !text.trim()}
-                className={`w-full py-4 font-bold text-lg transition-all ${
+                className={`px-8 py-4 font-bold text-lg rounded-lg transition-colors ${
                   isAdapting || credits <= 0 || !text.trim()
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-gray-900 text-white hover:bg-gray-800'
                 }`}
               >
-                {isAdapting ? 'Processing Your Text...' : 'Adapt This Text'}
+                {isAdapting ? 'Adapting...' : 'Adapt Text'}
               </button>
             </div>
+          </div>
+        </div>
 
-            {/* Results */}
-            {adaptedResult && (
-              <div className="bg-white border-2 border-gray-400 shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                  ✓ Successfully Adapted!
-                </h2>
-
-                <div className="bg-gray-50 border-l-4 border-gray-600 p-4 mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">Adapted Text:</h3>
-                  <p className="text-black leading-relaxed">
-                    {adaptedResult.adaptedText}
-                  </p>
-                </div>
-
-                {adaptedResult.vocabulary && adaptedResult.vocabulary.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">
-                      Key Vocabulary
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {adaptedResult.vocabulary.map((word, index) => (
-                        <div key={index} className="bg-gray-50 border-l-4 border-gray-400 p-3">
-                          <span className="font-bold text-black">
-                            {typeof word === 'string' ? word : word.word}
-                          </span>
-                          {typeof word === 'object' && word.translation && (
-                            <>
-                              <span className="mx-2 text-gray-400">→</span>
-                              <span className="text-gray-700">{word.translation}</span>
-                            </>
-                          )}
-                        </div>
+        {/* Right Side - Results */}
+        {isAnimating && (
+          <div className="w-1/2 p-8 bg-[#e8e9eb] transition-all duration-700">
+            <div className="max-w-3xl">
+              {!adaptedResult ? (
+                // Processing Animation
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-gray-700 mb-4">
+                      {PROCESSING_WORDS[processingWordIndex]}...
+                    </div>
+                    <div className="flex space-x-2 justify-center">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-3 h-3 bg-gray-700 rounded-full animate-bounce"
+                          style={{ animationDelay: `${i * 0.1}s` }}
+                        />
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              ) : (
+                // Results
+                <div>
+                  {/* Adapted Text */}
+                  <div className="border border-black bg-white p-6 mb-6">
+                    <div className="mb-3">
+                      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Adapted Text ({language} - {level})
+                      </span>
+                    </div>
+                    <div className="font-bodoni text-lg leading-relaxed text-gray-800">
+                      {isTyping ? (
+                        <span>
+                          {typedText}
+                          <span className="animate-pulse">|</span>
+                        </span>
+                      ) : (
+                        renderHighlightedText(adaptedResult.adaptedText, adaptedResult.vocabulary)
+                      )}
+                    </div>
+                  </div>
 
-            {/* Footer with privacy links */}
-            <footer className="mt-16 pt-8 pb-4 border-t border-gray-200">
-              <div className="text-center text-sm text-gray-600">
-                <a href="/privacy" className="hover:text-gray-900 hover:underline">Privacy Policy</a>
-                <span className="mx-2">•</span>
-                <a href="/delete-account" className="hover:text-gray-900 hover:underline">Data Deletion</a>
-                <span className="mx-2">•</span>
-                <a href="mailto:yaron@ulpan.co.il" className="hover:text-gray-900 hover:underline">Contact</a>
-              </div>
-            </footer>
+                  {/* Vocabulary Table */}
+                  {adaptedResult.vocabulary && adaptedResult.vocabulary.length > 0 && !isTyping && (
+                    <div className="bg-white border border-gray-300 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        New Vocabulary
+                      </h3>
+                      <div className="overflow-hidden">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left py-2 font-semibold text-gray-700">Word</th>
+                              <th className="text-left py-2 font-semibold text-gray-700">Translation</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {adaptedResult.vocabulary.map((item, index) => (
+                              <tr key={index} className="border-b border-gray-100">
+                                <td className="py-3 font-medium text-gray-900">
+                                  {typeof item === 'string' ? item : item.word}
+                                </td>
+                                <td className="py-3 text-gray-700">
+                                  {typeof item === 'string' ? item : item.translation}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
+
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Zain:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&display=swap');
+        
+        .font-zain {
+          font-family: 'Zain', sans-serif;
+        }
+        
+        .font-bodoni {
+          font-family: 'Bodoni Moda', serif;
+        }
+        
+        body {
+          font-family: 'Inter', sans-serif;
+        }
+      `}</style>
     </main>
   );
 }
