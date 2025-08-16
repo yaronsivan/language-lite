@@ -1,0 +1,92 @@
+# Translations for Language Lite UI based on mother tongue
+
+languages:
+  English:
+    adaptedText: "Adapted Text"
+    newVocabulary: "New Vocabulary"
+    word: "Word"
+    translation: "Translation"
+
+  Spanish:
+    adaptedText: "Texto Adaptado"
+    newVocabulary: "Vocabulario Nuevo"
+    word: "Palabra"
+    translation: "Traducción"
+
+  French:
+    adaptedText: "Texte Adapté"
+    newVocabulary: "Nouveau Vocabulaire"
+    word: "Mot"
+    translation: "Traduction"
+
+  German:
+    adaptedText: "Angepasster Text"
+    newVocabulary: "Neues Vokabular"
+    word: "Wort"
+    translation: "Übersetzung"
+
+  Italian:
+    adaptedText: "Testo Adattato"
+    newVocabulary: "Nuovo Vocabolario"
+    word: "Parola"
+    translation: "Traduzione"
+
+  Portuguese:
+    adaptedText: "Texto Adaptado"
+    newVocabulary: "Novo Vocabulário"
+    word: "Palavra"
+    translation: "Tradução"
+
+  Hebrew:
+    adaptedText: "טקסט מותאם"
+    newVocabulary: "אוצר מילים חדש"
+    word: "מילה"
+    translation: "תרגום"
+
+  Arabic:
+    adaptedText: "النص المُعدّل"
+    newVocabulary: "مفردات جديدة"
+    word: "كلمة"
+    translation: "ترجمة"
+
+  Russian:
+    adaptedText: "Адаптированный Текст"
+    newVocabulary: "Новый Словарь"
+    word: "Слово"
+    translation: "Перевод"
+
+  Chinese (Simplified):
+    adaptedText: "适应文本"
+    newVocabulary: "新词汇"
+    word: "词"
+    translation: "翻译"
+
+  Japanese:
+    adaptedText: "適応テキスト"
+    newVocabulary: "新しい語彙"
+    word: "単語"
+    translation: "翻訳"
+
+  Dutch:
+    adaptedText: "Aangepaste Tekst"
+    newVocabulary: "Nieuwe Woordenschat"
+    word: "Woord"
+    translation: "Vertaling"
+
+  Polish:
+    adaptedText: "Dostosowany Tekst"
+    newVocabulary: "Nowe Słownictwo"
+    word: "Słowo"
+    translation: "Tłumaczenie"
+
+  Turkish:
+    adaptedText: "Uyarlanmış Metin"
+    newVocabulary: "Yeni Kelime Dağarcığı"
+    word: "Kelime"
+    translation: "Çeviri"
+
+  Korean:
+    adaptedText: "적응된 텍스트"
+    newVocabulary: "새로운 어휘"
+    word: "단어"
+    translation: "번역"

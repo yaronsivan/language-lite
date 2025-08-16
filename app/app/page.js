@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
+import yaml from 'js-yaml';
 
 const LANGUAGES = [
   'Hebrew', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Polish', 'Russian',
@@ -22,6 +23,9 @@ export default function AppPage() {
   const [language, setLanguage] = useState('Spanish');
   const [level, setLevel] = useState('Beginner');
   const [motherTongue, setMotherTongue] = useState('English');
+  const [lastAdaptedLanguage, setLastAdaptedLanguage] = useState('Spanish');
+  const [lastAdaptedLevel, setLastAdaptedLevel] = useState('Beginner');
+  const [translations, setTranslations] = useState(null);
   const [isAdapting, setIsAdapting] = useState(false);
   const [adaptedResult, setAdaptedResult] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -102,6 +106,17 @@ export default function AppPage() {
     };
   }, [handleAuthUser]);
 
+  // Load translations
+  useEffect(() => {
+    fetch('/translations.yaml')
+      .then(res => res.text())
+      .then(text => {
+        const content = yaml.load(text);
+        setTranslations(content);
+      })
+      .catch(err => console.error('Error loading translations:', err));
+  }, []);
+
   // Load user preferences or demo defaults
   useEffect(() => {
     if (isRegistered) {
@@ -174,10 +189,17 @@ export default function AppPage() {
     }
   };
 
+  const getTranslation = (key) => {
+    if (!translations || !translations.languages[motherTongue]) {
+      return translations?.languages?.English?.[key] || key;
+    }
+    return translations.languages[motherTongue][key] || key;
+  };
+
   const formatTableForCopy = (vocabulary) => {
     if (!vocabulary || vocabulary.length === 0) return '';
     
-    let result = 'Word\tTranslation\n';
+    let result = `${getTranslation('word')}\t${getTranslation('translation')}\n`;
     vocabulary.forEach(item => {
       const word = typeof item === 'string' ? item : item.word;
       const translation = typeof item === 'string' ? item : item.translation;
@@ -257,6 +279,8 @@ export default function AppPage() {
     setIsAnimating(true);
     setAdaptedResult(null);
     setProcessingWordIndex(0);
+    setLastAdaptedLanguage(language);
+    setLastAdaptedLevel(level);
 
     try {
       const response = await fetch('/api/adapt', {
@@ -323,35 +347,35 @@ export default function AppPage() {
 
   return (
     <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
+      {/* User Info Bar */}
+      <div className="bg-[#ffb238] bg-opacity-80 p-3">
+        <div className="flex justify-center items-center gap-6 text-sm">
+          <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
+          <span className="bg-gray-900 text-white px-3 py-1 font-semibold">
+            {credits} credits remaining
+          </span>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              localStorage.removeItem('userEmail');
+              window.location.href = '/';
+            }}
+            className="text-gray-700 hover:text-gray-900 underline"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+      
       <div className={`flex transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
         {/* Left Side - Input */}
         <div className={`${isAnimating ? 'w-1/3' : 'w-full'} p-8 transition-all duration-700`}>
           <div className="max-w-4xl mx-auto">
-            {/* User Info Bar */}
-            <div className="bg-orange-500 bg-opacity-20 p-3 mb-6 -m-8 mb-2">
-              <div className="flex justify-center items-center gap-6 text-sm">
-                <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
-                <span className="bg-gray-900 text-white px-3 py-1 font-semibold">
-                  {credits} credits remaining
-                </span>
-                <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    localStorage.removeItem('userEmail');
-                    window.location.href = '/';
-                  }}
-                  className="text-gray-700 hover:text-gray-900 underline"
-                >
-                  Sign out
-                </button>
-              </div>
-            </div>
-
             {/* Header */}
-            <div className="text-center mb-8">
+            <div className="text-left mb-8">
               <h1 className="mb-4">
-                <span className="text-4xl font-bold text-gray-900 font-zain block">Language Lite</span>
-                <span className="text-2xl text-gray-700 font-light">adapt any text to your level of reading</span>
+                <span className="text-5xl font-bold text-gray-900 font-zain block">Language Lite</span>
+                <span className="text-lg text-gray-700 font-light">adapt any text to your level of reading</span>
               </h1>
             </div>
 
@@ -369,43 +393,43 @@ export default function AppPage() {
             </div>
 
             {/* Controls */}
-            <div className="flex gap-4 mb-6">
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="flex-1 min-w-0">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Target Language
                 </label>
                 <select 
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
+                  className={`w-full ${isAnimating ? 'p-2 text-sm' : 'p-3'} border border-gray-300 bg-white text-gray-900 font-medium`}
                 >
                   {LANGUAGES.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
                   ))}
                 </select>
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="flex-1 min-w-0">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
                   Your Level
                 </label>
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
+                  className={`w-full ${isAnimating ? 'p-2 text-sm' : 'p-3'} border border-gray-300 bg-white text-gray-900 font-medium`}
                 >
                   <option value="Beginner">Beginner</option>
                   <option value="Intermediate">Intermediate</option>
                   <option value="Advanced">Advanced</option>
                 </select>
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="flex-1 min-w-0">
+                <label className="block text-xs font-semibold text-gray-700 mb-1">
                   My Mother Tongue
                 </label>
                 <select
                   value={motherTongue}
                   onChange={(e) => setMotherTongue(e.target.value)}
-                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
+                  className={`w-full ${isAnimating ? 'p-2 text-sm' : 'p-3'} border border-gray-300 bg-white text-gray-900 font-medium`}
                 >
                   {LANGUAGES.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
@@ -427,6 +451,12 @@ export default function AppPage() {
               >
                 {isAdapting ? 'Adapting...' : 'Adapt Text'}
               </button>
+            </div>
+
+            {/* Footer Links */}
+            <div className="absolute bottom-4 left-8 text-xs text-gray-600 space-x-4">
+              <a href="/privacy" className="hover:text-gray-800 underline">Privacy Policy</a>
+              <a href="/delete-account" className="hover:text-gray-800 underline">Data Deletion</a>
             </div>
           </div>
         </div>
@@ -454,7 +484,7 @@ export default function AppPage() {
                   <div className="border border-black bg-white p-6 mb-6">
                     <div className="mb-3 flex justify-between items-center">
                       <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Adapted Text ({language} - {level})
+                        {getTranslation('adaptedText')} ({lastAdaptedLanguage} - {lastAdaptedLevel})
                       </span>
                       <button
                         onClick={() => copyToClipboard(adaptedResult.adaptedText, 'text')}
@@ -481,7 +511,7 @@ export default function AppPage() {
                     </div>
                     <div 
                       className="font-bodoni text-lg leading-relaxed text-gray-800"
-                      dir={RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr'}
+                      dir={RTL_LANGUAGES.includes(lastAdaptedLanguage) ? 'rtl' : 'ltr'}
                     >
                       {isTyping ? (
                         <span>
@@ -499,7 +529,7 @@ export default function AppPage() {
                     <div className="bg-white border border-gray-300 p-6">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-gray-900">
-                          New Vocabulary
+                          {getTranslation('newVocabulary')}
                         </h3>
                         <button
                           onClick={() => copyToClipboard(formatTableForCopy(adaptedResult.vocabulary), 'table')}
@@ -528,8 +558,8 @@ export default function AppPage() {
                         <table className="w-full">
                           <thead>
                             <tr className="border-b border-gray-200">
-                              <th className="text-left py-2 font-semibold text-gray-700">Word</th>
-                              <th className="text-left py-2 font-semibold text-gray-700">Translation</th>
+                              <th className="text-left py-2 font-semibold text-gray-700">{getTranslation('word')}</th>
+                              <th className="text-left py-2 font-semibold text-gray-700">{getTranslation('translation')}</th>
                             </tr>
                           </thead>
                           <tbody>
