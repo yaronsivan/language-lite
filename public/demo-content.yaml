@@ -1,0 +1,485 @@
+# Demo content for Language Lite landing page
+# Each language has 3 levels with highlighted words and tooltips
+
+original:
+  title: "Tech Giants Face Regulatory Scrutiny"
+  text: "Major technology corporations are confronting unprecedented regulatory challenges as governments worldwide implement stringent data privacy legislation. The paradigm shift in consumer protection has compelled companies to restructure their business models."
+  wordCount: 32
+
+languages:
+  Spanish:
+    direction: ltr
+    font: default
+    levels:
+      Beginner:
+        text: "Las grandes empresas de {tecnología} están teniendo problemas con las nuevas {reglas} del gobierno. Los gobiernos quieren {proteger} la información personal de la gente. Las empresas necesitan cambiar cómo {trabajan}."
+        wordCount: 30
+        highlights:
+          - word: "tecnología"
+            translation: "technology"
+            showTooltip: true
+          - word: "reglas"
+            translation: "rules"
+            showTooltip: false
+          - word: "proteger"
+            translation: "protect"
+            showTooltip: false
+          - word: "trabajan"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "Las grandes {corporaciones} tecnológicas enfrentan desafíos regulatorios sin precedentes. Los gobiernos están {implementando} leyes estrictas de privacidad de datos. Este cambio de {paradigma} obliga a las empresas a {reestructurar} sus modelos de negocio."
+        wordCount: 33
+        highlights:
+          - word: "corporaciones"
+            translation: "corporations"
+            showTooltip: false
+          - word: "implementando"
+            translation: "implementing"
+            showTooltip: true
+          - word: "paradigma"
+            translation: "paradigm"
+            showTooltip: false
+          - word: "reestructurar"
+            translation: "restructure"
+            showTooltip: false
+      Advanced:
+        text: "Las corporaciones tecnológicas más importantes confrontan desafíos {regulatorios} sin precedentes mientras los gobiernos mundiales implementan {legislación} {estricta} sobre privacidad de datos. El cambio de paradigma en la protección del consumidor ha {compelido} a las empresas a reestructurar sus modelos comerciales."
+        wordCount: 39
+        highlights:
+          - word: "regulatorios"
+            translation: "regulatory"
+            showTooltip: false
+          - word: "legislación"
+            translation: "legislation"
+            showTooltip: true
+          - word: "estricta"
+            translation: "strict"
+            showTooltip: false
+          - word: "compelido"
+            translation: "compelled"
+            showTooltip: false
+
+  French:
+    direction: ltr
+    font: default
+    levels:
+      Beginner:
+        text: "Les grandes {entreprises} de technologie ont des problèmes avec les nouvelles {règles} du gouvernement. Les gouvernements veulent {protéger} les informations personnelles. Les entreprises doivent changer leur façon de {travailler}."
+        wordCount: 29
+        highlights:
+          - word: "entreprises"
+            translation: "companies"
+            showTooltip: false
+          - word: "règles"
+            translation: "rules"
+            showTooltip: true
+          - word: "protéger"
+            translation: "protect"
+            showTooltip: false
+          - word: "travailler"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "Les grandes {sociétés} technologiques font face à des défis {réglementaires} sans précédent. Les gouvernements {mettent en place} des lois strictes sur la vie privée. Ce changement de {paradigme} oblige les entreprises à restructurer leurs modèles."
+        wordCount: 36
+        highlights:
+          - word: "sociétés"
+            translation: "corporations"
+            showTooltip: false
+          - word: "réglementaires"
+            translation: "regulatory"
+            showTooltip: false
+          - word: "mettent en place"
+            translation: "implement"
+            showTooltip: true
+          - word: "paradigme"
+            translation: "paradigm"
+            showTooltip: false
+      Advanced:
+        text: "Les {corporations} technologiques majeures {confrontent} des défis réglementaires sans précédent alors que les gouvernements mondiaux mettent en œuvre une {législation} stricte sur la confidentialité des données. Le changement de paradigme a {contraint} les entreprises à restructurer."
+        wordCount: 35
+        highlights:
+          - word: "corporations"
+            translation: "corporations"
+            showTooltip: false
+          - word: "confrontent"
+            translation: "face"
+            showTooltip: false
+          - word: "législation"
+            translation: "legislation"
+            showTooltip: true
+          - word: "contraint"
+            translation: "compelled"
+            showTooltip: false
+
+  German:
+    direction: ltr
+    font: default
+    levels:
+      Beginner:
+        text: "Große {Technologie}-Firmen haben Probleme mit neuen {Regeln} der Regierung. Die Regierungen wollen persönliche {Daten} schützen. Die Firmen müssen ihre {Arbeitsweise} ändern."
+        wordCount: 22
+        highlights:
+          - word: "Technologie"
+            translation: "technology"
+            showTooltip: false
+          - word: "Regeln"
+            translation: "rules"
+            showTooltip: true
+          - word: "Daten"
+            translation: "data"
+            showTooltip: false
+          - word: "Arbeitsweise"
+            translation: "way of working"
+            showTooltip: false
+      Intermediate:
+        text: "Große Technologie-{Unternehmen} stehen vor beispiellosen {regulatorischen} Herausforderungen. Regierungen {implementieren} strenge Datenschutzgesetze. Dieser {Paradigmenwechsel} zwingt Unternehmen, ihre Geschäftsmodelle umzustrukturieren."
+        wordCount: 19
+        highlights:
+          - word: "Unternehmen"
+            translation: "companies"
+            showTooltip: false
+          - word: "regulatorischen"
+            translation: "regulatory"
+            showTooltip: true
+          - word: "implementieren"
+            translation: "implement"
+            showTooltip: false
+          - word: "Paradigmenwechsel"
+            translation: "paradigm shift"
+            showTooltip: false
+      Advanced:
+        text: "Große Technologie{konzerne} sehen sich {beispiellosen} regulatorischen Herausforderungen gegenüber, während Regierungen weltweit {stringente} Datenschutz{gesetzgebung} implementieren. Der Paradigmenwechsel im Verbraucherschutz hat Unternehmen dazu gezwungen, ihre Geschäftsmodelle umzustrukturieren."
+        wordCount: 25
+        highlights:
+          - word: "konzerne"
+            translation: "corporations"
+            showTooltip: false
+          - word: "beispiellosen"
+            translation: "unprecedented"
+            showTooltip: false
+          - word: "stringente"
+            translation: "stringent"
+            showTooltip: true
+          - word: "gesetzgebung"
+            translation: "legislation"
+            showTooltip: false
+
+  Italian:
+    direction: ltr
+    font: default
+    levels:
+      Beginner:
+        text: "Le grandi {aziende} di tecnologia hanno problemi con le nuove {regole} del governo. I governi vogliono {proteggere} le informazioni personali. Le aziende devono cambiare come {lavorano}."
+        wordCount: 27
+        highlights:
+          - word: "aziende"
+            translation: "companies"
+            showTooltip: true
+          - word: "regole"
+            translation: "rules"
+            showTooltip: false
+          - word: "proteggere"
+            translation: "protect"
+            showTooltip: false
+          - word: "lavorano"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "Le grandi {corporazioni} tecnologiche affrontano sfide {regolamentari} senza precedenti. I governi stanno {implementando} leggi severe sulla privacy. Questo cambio di {paradigma} obbliga le aziende a ristrutturare i loro modelli."
+        wordCount: 30
+        highlights:
+          - word: "corporazioni"
+            translation: "corporations"
+            showTooltip: false
+          - word: "regolamentari"
+            translation: "regulatory"
+            showTooltip: true
+          - word: "implementando"
+            translation: "implementing"
+            showTooltip: false
+          - word: "paradigma"
+            translation: "paradigm"
+            showTooltip: false
+      Advanced:
+        text: "Le principali corporazioni tecnologiche {confrontano} sfide regolamentari senza {precedenti} mentre i governi mondiali implementano {legislazione} {stringente} sulla privacy dei dati. Il cambio di paradigma ha costretto le aziende a ristrutturare."
+        wordCount: 30
+        highlights:
+          - word: "confrontano"
+            translation: "face"
+            showTooltip: false
+          - word: "precedenti"
+            translation: "precedents"
+            showTooltip: false
+          - word: "legislazione"
+            translation: "legislation"
+            showTooltip: true
+          - word: "stringente"
+            translation: "stringent"
+            showTooltip: false
+
+  Portuguese:
+    direction: ltr
+    font: default
+    levels:
+      Beginner:
+        text: "As grandes {empresas} de tecnologia têm problemas com as novas {regras} do governo. Os governos querem {proteger} as informações pessoais. As empresas precisam mudar como {trabalham}."
+        wordCount: 28
+        highlights:
+          - word: "empresas"
+            translation: "companies"
+            showTooltip: false
+          - word: "regras"
+            translation: "rules"
+            showTooltip: true
+          - word: "proteger"
+            translation: "protect"
+            showTooltip: false
+          - word: "trabalham"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "As grandes {corporações} tecnológicas enfrentam desafios {regulatórios} sem precedentes. Os governos estão {implementando} leis rígidas de privacidade. Esta mudança de {paradigma} obriga as empresas a reestruturar seus modelos."
+        wordCount: 29
+        highlights:
+          - word: "corporações"
+            translation: "corporations"
+            showTooltip: false
+          - word: "regulatórios"
+            translation: "regulatory"
+            showTooltip: false
+          - word: "implementando"
+            translation: "implementing"
+            showTooltip: true
+          - word: "paradigma"
+            translation: "paradigm"
+            showTooltip: false
+      Advanced:
+        text: "As principais corporações tecnológicas {confrontam} desafios regulatórios sem {precedentes} enquanto governos mundiais implementam {legislação} {rigorosa} sobre privacidade de dados. A mudança de paradigma compeliu as empresas a reestruturar."
+        wordCount: 28
+        highlights:
+          - word: "confrontam"
+            translation: "confront"
+            showTooltip: false
+          - word: "precedentes"
+            translation: "precedents"
+            showTooltip: false
+          - word: "legislação"
+            translation: "legislation"
+            showTooltip: true
+          - word: "rigorosa"
+            translation: "rigorous"
+            showTooltip: false
+
+  Hebrew:
+    direction: rtl
+    font: default
+    levels:
+      Beginner:
+        text: "חברות {טכנולוגיה} גדולות נתקלות בבעיות עם {חוקים} חדשים של הממשלה. הממשלות רוצות {להגן} על המידע האישי. החברות צריכות לשנות איך הן {עובדות}."
+        wordCount: 22
+        highlights:
+          - word: "טכנולוגיה"
+            translation: "technology"
+            showTooltip: true
+          - word: "חוקים"
+            translation: "laws"
+            showTooltip: false
+          - word: "להגן"
+            translation: "protect"
+            showTooltip: false
+          - word: "עובדות"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "תאגידי הטכנולוגיה הגדולים מתמודדים עם אתגרים {רגולטוריים} חסרי תקדים. ממשלות {מיישמות} חוקי פרטיות נתונים מחמירים. שינוי {הפרדיגמה} מאלץ חברות {לארגן מחדש} את המודלים העסקיים שלהן."
+        wordCount: 25
+        highlights:
+          - word: "רגולטוריים"
+            translation: "regulatory"
+            showTooltip: false
+          - word: "מיישמות"
+            translation: "implementing"
+            showTooltip: true
+          - word: "הפרדיגמה"
+            translation: "paradigm"
+            showTooltip: false
+          - word: "לארגן מחדש"
+            translation: "restructure"
+            showTooltip: false
+      Advanced:
+        text: "תאגידי הטכנולוגיה המובילים {מתעמתים} עם אתגרים רגולטוריים חסרי {תקדים} בעוד ממשלות עולמיות מיישמות {חקיקה} {מחמירה} בנושא פרטיות נתונים. שינוי הפרדיגמה אילץ חברות לארגן מחדש."
+        wordCount: 24
+        highlights:
+          - word: "מתעמתים"
+            translation: "confronting"
+            showTooltip: false
+          - word: "תקדים"
+            translation: "precedent"
+            showTooltip: false
+          - word: "חקיקה"
+            translation: "legislation"
+            showTooltip: true
+          - word: "מחמירה"
+            translation: "stringent"
+            showTooltip: false
+
+  Arabic:
+    direction: rtl
+    font: "Noto Sans Arabic"
+    levels:
+      Beginner:
+        text: "شركات {التكنولوجيا} الكبيرة تواجه مشاكل مع {القوانين} الجديدة. الحكومات تريد {حماية} المعلومات الشخصية. الشركات تحتاج لتغيير طريقة {عملها}."
+        wordCount: 18
+        highlights:
+          - word: "التكنولوجيا"
+            translation: "technology"
+            showTooltip: true
+          - word: "القوانين"
+            translation: "laws"
+            showTooltip: false
+          - word: "حماية"
+            translation: "protect"
+            showTooltip: false
+          - word: "عملها"
+            translation: "their work"
+            showTooltip: false
+      Intermediate:
+        text: "الشركات التقنية الكبرى تواجه تحديات {تنظيمية} غير مسبوقة. الحكومات {تطبق} قوانين صارمة لخصوصية البيانات. هذا التحول في {النموذج} يجبر الشركات على {إعادة هيكلة} نماذج أعمالها."
+        wordCount: 25
+        highlights:
+          - word: "تنظيمية"
+            translation: "regulatory"
+            showTooltip: false
+          - word: "تطبق"
+            translation: "implement"
+            showTooltip: true
+          - word: "النموذج"
+            translation: "paradigm"
+            showTooltip: false
+          - word: "إعادة هيكلة"
+            translation: "restructure"
+            showTooltip: false
+      Advanced:
+        text: "شركات التكنولوجيا الكبرى {تواجه} تحديات تنظيمية غير {مسبوقة} بينما الحكومات العالمية تطبق {تشريعات} {صارمة} لخصوصية البيانات. التحول النموذجي أجبر الشركات على إعادة الهيكلة."
+        wordCount: 23
+        highlights:
+          - word: "تواجه"
+            translation: "face"
+            showTooltip: false
+          - word: "مسبوقة"
+            translation: "unprecedented"
+            showTooltip: false
+          - word: "تشريعات"
+            translation: "legislation"
+            showTooltip: true
+          - word: "صارمة"
+            translation: "stringent"
+            showTooltip: false
+
+  Chinese (Simplified):
+    direction: ltr
+    font: "Noto Sans SC"
+    levels:
+      Beginner:
+        text: "大型{科技}公司面临政府新{规定}的问题。政府想要{保护}个人信息。公司需要改变他们的{工作}方式。"
+        wordCount: 24
+        highlights:
+          - word: "科技"
+            translation: "technology"
+            showTooltip: true
+          - word: "规定"
+            translation: "regulations"
+            showTooltip: false
+          - word: "保护"
+            translation: "protect"
+            showTooltip: false
+          - word: "工作"
+            translation: "work"
+            showTooltip: false
+      Intermediate:
+        text: "大型科技{企业}面临前所未有的{监管}挑战。政府正在{实施}严格的数据隐私法律。这种{范式}转变迫使公司重组其商业模式。"
+        wordCount: 31
+        highlights:
+          - word: "企业"
+            translation: "corporations"
+            showTooltip: false
+          - word: "监管"
+            translation: "regulatory"
+            showTooltip: true
+          - word: "实施"
+            translation: "implement"
+            showTooltip: false
+          - word: "范式"
+            translation: "paradigm"
+            showTooltip: false
+      Advanced:
+        text: "主要科技企业面临{空前}的监管挑战，全球政府正在实施{严格}的数据隐私{立法}。消费者保护的范式转变{迫使}企业重组其商业模式。"
+        wordCount: 33
+        highlights:
+          - word: "空前"
+            translation: "unprecedented"
+            showTooltip: false
+          - word: "严格"
+            translation: "stringent"
+            showTooltip: false
+          - word: "立法"
+            translation: "legislation"
+            showTooltip: true
+          - word: "迫使"
+            translation: "compelled"
+            showTooltip: false
+
+  Japanese:
+    direction: ltr
+    font: "Noto Sans JP"
+    levels:
+      Beginner:
+        text: "大きな{テクノロジー}会社は政府の新しい{ルール}で問題があります。政府は個人情報を{守りたい}です。会社は{働き方}を変える必要があります。"
+        wordCount: 32
+        highlights:
+          - word: "テクノロジー"
+            translation: "technology"
+            showTooltip: true
+          - word: "ルール"
+            translation: "rules"
+            showTooltip: false
+          - word: "守りたい"
+            translation: "want to protect"
+            showTooltip: false
+          - word: "働き方"
+            translation: "way of working"
+            showTooltip: false
+      Intermediate:
+        text: "大手テクノロジー{企業}は前例のない{規制}上の課題に直面しています。政府はデータプライバシーの厳格な法律を{実施}しています。この{パラダイム}シフトにより、企業はビジネスモデルの再構築を余儀なくされています。"
+        wordCount: 48
+        highlights:
+          - word: "企業"
+            translation: "corporations"
+            showTooltip: false
+          - word: "規制"
+            translation: "regulatory"
+            showTooltip: true
+          - word: "実施"
+            translation: "implement"
+            showTooltip: false
+          - word: "パラダイム"
+            translation: "paradigm"
+            showTooltip: false
+      Advanced:
+        text: "主要テクノロジー企業は{前例のない}規制上の課題に{直面}しており、世界中の政府が{厳格}なデータプライバシー{法制}を実施しています。消費者保護のパラダイムシフトにより、企業はビジネスモデルの再構築を余儀なくされています。"
+        wordCount: 52
+        highlights:
+          - word: "前例のない"
+            translation: "unprecedented"
+            showTooltip: false
+          - word: "直面"
+            translation: "confront"
+            showTooltip: false
+          - word: "厳格"
+            translation: "stringent"
+            showTooltip: false
+          - word: "法制"
+            translation: "legislation"
+            showTooltip: true
