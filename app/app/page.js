@@ -609,7 +609,7 @@ export default function AppPage() {
       
       <div className={`flex flex-col lg:flex-row transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
         {/* Left Side - Input */}
-        <div className={`${isAnimating ? 'lg:w-1/3 w-full' : 'w-full'} p-4 lg:p-8 transition-all duration-700`}>
+        <div className={`${isAnimating ? 'lg:w-2/5 w-full' : 'w-full'} p-4 lg:p-8 transition-all duration-700`}>
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-left mb-8">
@@ -695,7 +695,7 @@ export default function AppPage() {
 
         {/* Right Side - Results */}
         {isAnimating && (
-          <div className="lg:w-2/3 w-full p-4 lg:p-8 bg-[#e8e9eb] transition-all duration-700">
+          <div className="lg:w-3/5 w-full p-4 lg:p-8 bg-[#e8e9eb] transition-all duration-700">
             <div className="lg:max-w-3xl">
               {!adaptedResult ? (
                 // Processing Animation
