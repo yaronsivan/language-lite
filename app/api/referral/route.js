@@ -2,19 +2,34 @@ import { supabase, supabaseAdmin } from '../../../lib/supabase';
 
 export async function POST(request) {
   try {
+    console.log('Referral API called, checking environment...');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('SUPABASE_SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    console.log('supabaseAdmin client exists:', !!supabaseAdmin);
+    
     // Check if admin client is available
     if (!supabaseAdmin) {
       console.error('Supabase admin client not configured. Missing SUPABASE_SERVICE_ROLE_KEY');
-      return Response.json({ error: 'Referral service not configured' }, { status: 500 });
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('SUPABASE')));
+      return Response.json({ 
+        error: 'Referral service not configured', 
+        debug: {
+          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+          nodeEnv: process.env.NODE_ENV
+        }
+      }, { status: 500 });
     }
 
-    const { referrerEmail, action } = await request.json();
+    const requestBody = await request.json();
+    const { referrerEmail, action } = requestBody;
+    console.log('Referral request:', { referrerEmail, action });
 
     if (action === 'generate') {
       // Generate a unique referral code
       const referralCode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       
       // Store referral record using admin client to bypass RLS
+      console.log('Attempting to insert referral record...');
       const { data, error } = await supabaseAdmin
         .from('referrals')
         .insert([{
@@ -28,8 +43,15 @@ export async function POST(request) {
 
       if (error) {
         console.error('Error creating referral:', error);
-        return Response.json({ error: 'Failed to create referral' }, { status: 500 });
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        return Response.json({ 
+          error: 'Failed to create referral', 
+          details: error.message,
+          code: error.code 
+        }, { status: 500 });
       }
+      
+      console.log('Referral created successfully:', data);
 
       // Use environment-appropriate base URL
       const baseUrl = process.env.NODE_ENV === 'production' 
@@ -88,6 +110,11 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Error in referral API:', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Error stack:', error.stack);
+    return Response.json({ 
+      error: 'Internal server error', 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 });
   }
 }
