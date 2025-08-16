@@ -31,6 +31,42 @@ export default function AppPage() {
   
   const typingTimeoutRef = useRef(null);
 
+  const handleAuthUser = useCallback(async (user) => {
+    const userEmail = user.email;
+    
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('credits, language, level')
+      .eq('email', userEmail)
+      .single();
+
+    if (existingUser) {
+      setEmail(userEmail);
+      setCredits(existingUser.credits);
+      setLanguage(existingUser.language || 'Spanish');
+      setLevel(existingUser.level || 'Beginner');
+      setIsRegistered(true);
+    } else {
+      const { data: newUser } = await supabase
+        .from('users')
+        .insert([{
+          email: userEmail,
+          language: 'Spanish',
+          level: 'Beginner',
+          credits: 6,
+          last_credit_refresh: new Date().toISOString().split('T')[0]
+        }])
+        .select()
+        .single();
+      
+      if (newUser) {
+        setEmail(userEmail);
+        setCredits(newUser.credits);
+        setIsRegistered(true);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const initAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -83,42 +119,6 @@ export default function AppPage() {
     }
     return () => clearInterval(interval);
   }, [isAdapting, isTyping]);
-
-  const handleAuthUser = useCallback(async (user) => {
-    const userEmail = user.email;
-    
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('credits, language, level')
-      .eq('email', userEmail)
-      .single();
-
-    if (existingUser) {
-      setEmail(userEmail);
-      setCredits(existingUser.credits);
-      setLanguage(existingUser.language || 'Spanish');
-      setLevel(existingUser.level || 'Beginner');
-      setIsRegistered(true);
-    } else {
-      const { data: newUser } = await supabase
-        .from('users')
-        .insert([{
-          email: userEmail,
-          language: 'Spanish',
-          level: 'Beginner',
-          credits: 6,
-          last_credit_refresh: new Date().toISOString().split('T')[0]
-        }])
-        .select()
-        .single();
-      
-      if (newUser) {
-        setEmail(userEmail);
-        setCredits(newUser.credits);
-        setIsRegistered(true);
-      }
-    }
-  }, []);
 
   const checkUserCredits = async (userEmail) => {
     try {
