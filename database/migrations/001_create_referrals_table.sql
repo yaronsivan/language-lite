@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS referrals (
     referred_email VARCHAR(255),
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'expired')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    completed_at TIMESTAMP WITH TIME ZONE,
-    FOREIGN KEY (referrer_email) REFERENCES auth.users(email) ON DELETE CASCADE
+    completed_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Create index for faster lookups
@@ -20,12 +19,12 @@ ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can only see their own referrals
 CREATE POLICY "Users can view own referrals" ON referrals
-    FOR SELECT USING (referrer_email = auth.email());
+    FOR SELECT USING (referrer_email = auth.jwt()->>'email');
 
 -- Policy: Users can create referrals for themselves
 CREATE POLICY "Users can create own referrals" ON referrals
-    FOR INSERT WITH CHECK (referrer_email = auth.email());
+    FOR INSERT WITH CHECK (referrer_email = auth.jwt()->>'email');
 
--- Policy: System can update any referral (for claiming)
-CREATE POLICY "System can update referrals" ON referrals
+-- Policy: Allow service role to update any referral (for claiming)
+CREATE POLICY "Service can update referrals" ON referrals
     FOR UPDATE USING (true);
