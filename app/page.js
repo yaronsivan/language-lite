@@ -51,8 +51,10 @@ export default function HomePage() {
     };
   }, []);
 
+  const [activeTooltip, setActiveTooltip] = useState(0); // Start with first word showing
+
   // Helper function to render text with highlights
-  const renderHighlightedText = (text, highlights, showTooltip = false) => {
+  const renderHighlightedText = (text, highlights) => {
     if (!highlights || highlights.length === 0) return text;
     
     let result = text;
@@ -85,11 +87,12 @@ export default function HomePage() {
           <span 
             key={`highlight-${idx}`}
             className="relative inline-block"
+            onMouseEnter={() => setActiveTooltip(idx)}
           >
-            <span className="bg-yellow-200 px-1 rounded">
+            <span className="bg-yellow-200 px-1 rounded cursor-pointer">
               {highlight.word}
             </span>
-            {highlight.showTooltip && showTooltip && (
+            {activeTooltip === idx && (
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap z-10">
                 {highlight.translation}
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
@@ -126,7 +129,11 @@ export default function HomePage() {
     if (!levelData) return null;
     
     return {
-      original: demoContent.original,
+      original: {
+        ...langData.original,
+        direction: langData.direction,
+        font: langData.font
+      },
       adapted: {
         ...levelData,
         direction: langData.direction,
@@ -243,12 +250,13 @@ export default function HomePage() {
               <div className="mb-6">
                 <div className="border border-black p-6 bg-white/95">
                   <div className="mb-2">
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Original (English)</span>
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Original ({selectedLanguage})</span>
                   </div>
-                  <h3 className="text-xl font-bodoni mb-3 text-gray-900">
-                    {content.original.title}
-                  </h3>
-                  <p className="text-gray-800 leading-relaxed font-bodoni">
+                  <p 
+                    className="text-gray-800 leading-relaxed font-bodoni text-lg"
+                    dir={content.original.direction}
+                    style={content.original.font !== 'default' ? { fontFamily: content.original.font } : {}}
+                  >
                     {content.original.text}
                   </p>
                 </div>
@@ -256,7 +264,7 @@ export default function HomePage() {
 
               {/* Adapted Text */}
               <div className="mb-6">
-                <div className="p-6 bg-white/95">
+                <div className="border border-black p-6 bg-white/95">
                   <div className="mb-2">
                     <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Adapted ({selectedLanguage} - {selectedLevel})
@@ -269,8 +277,7 @@ export default function HomePage() {
                   >
                     {renderHighlightedText(
                       content.adapted.text, 
-                      content.adapted.highlights,
-                      true
+                      content.adapted.highlights
                     )}
                   </p>
                 </div>
