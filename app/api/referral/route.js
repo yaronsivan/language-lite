@@ -1,15 +1,21 @@
-import { supabase } from '../../../lib/supabase';
+import { supabase, supabaseAdmin } from '../../../lib/supabase';
 
 export async function POST(request) {
   try {
+    // Check if admin client is available
+    if (!supabaseAdmin) {
+      console.error('Supabase admin client not configured. Missing SUPABASE_SERVICE_ROLE_KEY');
+      return Response.json({ error: 'Referral service not configured' }, { status: 500 });
+    }
+
     const { referrerEmail, action } = await request.json();
 
     if (action === 'generate') {
       // Generate a unique referral code
       const referralCode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       
-      // Store referral record
-      const { data, error } = await supabase
+      // Store referral record using admin client to bypass RLS
+      const { data, error } = await supabaseAdmin
         .from('referrals')
         .insert([{
           referrer_email: referrerEmail,
@@ -40,7 +46,7 @@ export async function POST(request) {
       const { referralCode, newUserEmail } = await request.json();
 
       // Find the referral record
-      const { data: referralData, error: referralError } = await supabase
+      const { data: referralData, error: referralError } = await supabaseAdmin
         .from('referrals')
         .select('*')
         .eq('referral_code', referralCode)
@@ -52,7 +58,7 @@ export async function POST(request) {
       }
 
       // Update referral status
-      await supabase
+      await supabaseAdmin
         .from('referrals')
         .update({ 
           status: 'completed',
@@ -62,14 +68,14 @@ export async function POST(request) {
         .eq('referral_code', referralCode);
 
       // Add 20 credits to the referrer
-      const { data: userData } = await supabase
+      const { data: userData } = await supabaseAdmin
         .from('users')
         .select('credits')
         .eq('email', referralData.referrer_email)
         .single();
 
       if (userData) {
-        await supabase
+        await supabaseAdmin
           .from('users')
           .update({ credits: userData.credits + 20 })
           .eq('email', referralData.referrer_email);
