@@ -871,7 +871,14 @@ export default function AppPage() {
       {/* Referral Popup */}
       {showReferralPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md mx-4">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowReferralPopup(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold w-6 h-6 flex items-center justify-center"
+            >
+              ×
+            </button>
             <div className="text-center">
               <div className="text-4xl mb-4">🎁</div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Share & Earn Credits</h3>
@@ -886,29 +893,35 @@ export default function AppPage() {
                 </div>
               ) : referralLink ? (
                 <div className="mb-6">
-                  <div className="bg-gray-100 p-3 rounded border mb-4">
+                  <div className="bg-gray-100 p-3 rounded border mb-4 relative">
                     <p className="text-xs text-gray-600 mb-1">Your referral link:</p>
-                    <p className="text-sm font-mono break-all">{referralLink}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono break-all text-gray-900 flex-1">{referralLink}</p>
+                      <button
+                        onClick={copyReferralLink}
+                        className="text-gray-500 hover:text-gray-700 p-1"
+                        title="Copy link"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                          <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={shareReferralToWhatsApp}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                      className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                     >
-                      <span>📱</span> Share on WhatsApp
+                      Share on WhatsApp
                     </button>
                     <button
                       onClick={shareReferralToEmail}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                      className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                     >
-                      <span>📧</span> Share via Email
-                    </button>
-                    <button
-                      onClick={copyReferralLink}
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                    >
-                      <span>📋</span> Copy Link
+                      Share via Email
                     </button>
                   </div>
                 </div>
@@ -917,13 +930,6 @@ export default function AppPage() {
                   <p className="text-red-500">Failed to generate referral link. Please try again.</p>
                 </div>
               )}
-              
-              <button
-                onClick={() => setShowReferralPopup(false)}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
