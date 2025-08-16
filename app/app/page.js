@@ -26,6 +26,8 @@ export default function AppPage() {
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typedText, setTypedText] = useState('');
+  const [copiedText, setCopiedText] = useState(false);
+  const [copiedTable, setCopiedTable] = useState(false);
   
   const typingTimeoutRef = useRef(null);
 
@@ -59,7 +61,7 @@ export default function AppPage() {
     return () => {
       authListener?.subscription?.unsubscribe();
     };
-  }, []);
+  }, [handleAuthUser]);
 
   // Load user preferences or demo defaults
   useEffect(() => {
@@ -152,6 +154,33 @@ export default function AppPage() {
         setIsTyping(false);
       }
     }, 20); // Fast typing effect
+  };
+
+  const copyToClipboard = async (text, type) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (type === 'text') {
+        setCopiedText(true);
+        setTimeout(() => setCopiedText(false), 2000);
+      } else if (type === 'table') {
+        setCopiedTable(true);
+        setTimeout(() => setCopiedTable(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  const formatTableForCopy = (vocabulary) => {
+    if (!vocabulary || vocabulary.length === 0) return '';
+    
+    let result = 'Word\tTranslation\n';
+    vocabulary.forEach(item => {
+      const word = typeof item === 'string' ? item : item.word;
+      const translation = typeof item === 'string' ? item : item.translation;
+      result += `${word}\t${translation}\n`;
+    });
+    return result;
   };
 
   const renderHighlightedText = (text, vocabulary) => {
@@ -293,18 +322,13 @@ export default function AppPage() {
     <main className="min-h-screen bg-[#ffb238] transition-all duration-500">
       <div className={`flex transition-all duration-700 ${isAnimating ? 'transform' : ''}`}>
         {/* Left Side - Input */}
-        <div className={`${isAnimating ? 'w-1/2' : 'w-full'} p-8 transition-all duration-700`}>
+        <div className={`${isAnimating ? 'w-2/3' : 'w-full'} p-8 transition-all duration-700`}>
           <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4 font-zain">
-                Language Lite - adapt any text to your level of reading
-              </h1>
-              
-              {/* User Info */}
-              <div className="flex justify-center items-center gap-6 mb-6">
+            {/* User Info Bar */}
+            <div className="bg-yellow-100 p-3 mb-6">
+              <div className="flex justify-center items-center gap-6 text-sm">
                 <span className="text-gray-700">Welcome, {email.split('@')[0]}</span>
-                <span className="bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold">
+                <span className="bg-gray-900 text-white px-3 py-1 font-semibold">
                   {credits} credits remaining
                 </span>
                 <button
@@ -320,15 +344,23 @@ export default function AppPage() {
               </div>
             </div>
 
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="mb-4">
+                <span className="text-4xl font-bold text-gray-900 font-zain block">Language Lite</span>
+                <span className="text-2xl text-gray-700 font-light">adapt any text to your level of reading</span>
+              </h1>
+            </div>
+
             {/* Text Input */}
             <div className="mb-6">
               <div className="border border-black bg-white p-6">
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="w-full h-64 resize-none border-none outline-none font-bodoni text-lg leading-relaxed"
+                  className="w-full h-64 resize-none border-none outline-none font-bodoni text-lg leading-relaxed text-black"
                   placeholder="Paste here..."
-                  style={{ fontFamily: 'Bodoni Moda, serif' }}
+                  style={{ fontFamily: 'Bodoni Moda, serif', color: 'black' }}
                 />
               </div>
             </div>
@@ -342,7 +374,7 @@ export default function AppPage() {
                 <select 
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
+                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
                 >
                   {LANGUAGES.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
@@ -356,7 +388,7 @@ export default function AppPage() {
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
+                  className="w-full p-3 border border-gray-300 bg-white text-gray-900 font-medium"
                 >
                   <option value="Beginner">Beginner</option>
                   <option value="Intermediate">Intermediate</option>
@@ -370,7 +402,7 @@ export default function AppPage() {
               <button
                 onClick={handleAdapt}
                 disabled={isAdapting || credits <= 0 || !text.trim()}
-                className={`px-8 py-4 font-bold text-lg rounded-lg transition-colors ${
+                className={`px-8 py-4 font-bold text-lg transition-colors ${
                   isAdapting || credits <= 0 || !text.trim()
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -384,7 +416,7 @@ export default function AppPage() {
 
         {/* Right Side - Results */}
         {isAnimating && (
-          <div className="w-1/2 p-8 bg-[#e8e9eb] transition-all duration-700">
+          <div className="w-1/3 p-8 bg-[#e8e9eb] transition-all duration-700">
             <div className="max-w-3xl">
               {!adaptedResult ? (
                 // Processing Animation
@@ -409,10 +441,32 @@ export default function AppPage() {
                 <div>
                   {/* Adapted Text */}
                   <div className="border border-black bg-white p-6 mb-6">
-                    <div className="mb-3">
+                    <div className="mb-3 flex justify-between items-center">
                       <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Adapted Text ({language} - {level})
                       </span>
+                      <button
+                        onClick={() => copyToClipboard(adaptedResult.adaptedText, 'text')}
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                        title="Copy adapted text"
+                      >
+                        {copiedText ? (
+                          <>
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                            </svg>
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                            </svg>
+                            Copy
+                          </>
+                        )}
+                      </button>
                     </div>
                     <div className="font-bodoni text-lg leading-relaxed text-gray-800">
                       {isTyping ? (
@@ -428,10 +482,34 @@ export default function AppPage() {
 
                   {/* Vocabulary Table */}
                   {adaptedResult.vocabulary && adaptedResult.vocabulary.length > 0 && !isTyping && (
-                    <div className="bg-white border border-gray-300 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        New Vocabulary
-                      </h3>
+                    <div className="bg-white border border-gray-300 p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          New Vocabulary
+                        </h3>
+                        <button
+                          onClick={() => copyToClipboard(formatTableForCopy(adaptedResult.vocabulary), 'table')}
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                          title="Copy vocabulary table"
+                        >
+                          {copiedTable ? (
+                            <>
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                              </svg>
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                              </svg>
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
                       <div className="overflow-hidden">
                         <table className="w-full">
                           <thead>
