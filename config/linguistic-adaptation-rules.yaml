@@ -1,0 +1,1576 @@
+# Linguistic Adaptation Rules for CEFR Levels
+# Version: 1.0
+# Purpose: Guide AI agents in adapting texts for language learners at different proficiency levels
+
+universal_principles:
+  vocabulary_frequency:
+    A1:
+      word_count: 500-800
+      frequency_band: "Top 1000 most frequent words"
+      cognate_reliance: "Maximum use of cognates and international words"
+    A2:
+      word_count: 1200-1500
+      frequency_band: "Top 2000 most frequent words"
+      cognate_reliance: "High use of cognates"
+    B1:
+      word_count: 2500-3000
+      frequency_band: "Top 3500 most frequent words"
+      cognate_reliance: "Moderate use of cognates"
+    B2:
+      word_count: 4000-5000
+      frequency_band: "Top 5000 most frequent words"
+      cognate_reliance: "Natural use of cognates"
+    C1:
+      word_count: 6000-8000
+      frequency_band: "Top 8000 most frequent words"
+      cognate_reliance: "Minimal reliance on cognates"
+    C2:
+      word_count: 10000+
+      frequency_band: "Unrestricted vocabulary"
+      cognate_reliance: "No restrictions"
+
+  sentence_complexity:
+    A1:
+      max_words_per_sentence: 8
+      max_clauses: 1
+      subordination: "None"
+      connectors: ["and", "but", "or"]
+    A2:
+      max_words_per_sentence: 12
+      max_clauses: 2
+      subordination: "Simple (because, when)"
+      connectors: ["and", "but", "or", "because", "when", "if"]
+    B1:
+      max_words_per_sentence: 15
+      max_clauses: 2-3
+      subordination: "Common relative clauses"
+      connectors: ["although", "while", "since", "unless", "that", "which"]
+    B2:
+      max_words_per_sentence: 20
+      max_clauses: 3-4
+      subordination: "Complex relative and adverbial clauses"
+      connectors: ["whereas", "provided that", "in order to", "despite", "however"]
+    C1:
+      max_words_per_sentence: 25
+      max_clauses: "Multiple"
+      subordination: "Full range including embedded clauses"
+      connectors: ["nevertheless", "furthermore", "consequently", "albeit", "notwithstanding"]
+    C2:
+      max_words_per_sentence: "Unrestricted"
+      max_clauses: "Unrestricted"
+      subordination: "Full complexity"
+      connectors: "Full range including literary and formal markers"
+
+languages:
+  spanish:
+    name: "Spanish"
+    code: "es"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present indicative (regular verbs)"
+            - "Present continuous (estar + gerund)"
+            - "Near future (ir a + infinitive)"
+          avoid:
+            - "Subjunctive mood"
+            - "Conditional tense"
+            - "Past tenses except preterite of common verbs"
+            - "Future tense"
+            - "Passive voice"
+          verb_restrictions:
+            - "Use only regular -ar, -er, -ir verbs"
+            - "Limited irregular verbs: ser, estar, tener, hacer, ir, poder"
+          pronouns:
+            - "Subject pronouns only"
+            - "No object pronouns except 'me' and 'te'"
+          specific_features:
+            - "Avoid ser vs estar distinctions beyond basic uses"
+            - "No reflexive verbs except daily routines"
+            - "Simple gender/number agreement only"
+        vocabulary:
+          themes: ["personal info", "family", "daily routines", "numbers 1-100", "colors", "basic food"]
+          avoid: ["abstract concepts", "idiomatic expressions", "regional variations"]
+        syntax:
+          word_order: "Strict SVO"
+          questions: "Simple yes/no and basic WH-questions"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Present indicative (all verbs)"
+            - "Preterite (regular and common irregular)"
+            - "Imperfect (limited use)"
+            - "Present perfect"
+            - "Near future"
+          avoid:
+            - "Subjunctive mood"
+            - "Conditional perfect"
+            - "Literary tenses (future perfect, preterite perfect)"
+          verb_restrictions:
+            - "Common irregular verbs allowed"
+            - "Basic reflexive verbs"
+          pronouns:
+            - "Direct object pronouns"
+            - "Indirect object pronouns (separately, not combined)"
+          specific_features:
+            - "Basic ser vs estar distinction"
+            - "Common reflexive verbs"
+            - "Comparatives and superlatives"
+        vocabulary:
+          themes: ["shopping", "travel", "health", "hobbies", "past experiences", "future plans"]
+          avoid: ["technical jargon", "literary vocabulary", "complex idioms"]
+        syntax:
+          word_order: "Some flexibility with emphasis"
+          questions: "All question types including indirect questions"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All indicative tenses"
+            - "Present subjunctive (common uses)"
+            - "Conditional simple"
+            - "Imperative (formal and informal)"
+          avoid:
+            - "Imperfect subjunctive"
+            - "Literary tenses"
+            - "Complex sequence of tenses"
+          verb_restrictions:
+            - "Most irregular verbs"
+            - "Phrasal verbs with prepositions"
+          pronouns:
+            - "Combined object pronouns"
+            - "Relative pronouns (que, donde, quien)"
+          specific_features:
+            - "Subjunctive in common expressions"
+            - "Reported speech (basic)"
+            - "Passive voice with 'se'"
+        vocabulary:
+          themes: ["work", "education", "environment", "media", "relationships", "current events"]
+          avoid: ["highly specialized terminology", "archaic expressions"]
+        syntax:
+          word_order: "Flexible for stylistic effect"
+          questions: "Complex question formation"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses including imperfect subjunctive"
+            - "All conditional forms"
+            - "All perfect tenses"
+          avoid:
+            - "Archaic verb forms"
+            - "Regional grammatical variations (unless specified)"
+          verb_restrictions:
+            - "No restrictions on verb types"
+            - "Complex verbal periphrases"
+          pronouns:
+            - "All pronoun types including 'lo' neutro"
+            - "Emphatic and contrastive pronouns"
+          specific_features:
+            - "Full subjunctive use"
+            - "Complex reported speech"
+            - "All types of passive constructions"
+        vocabulary:
+          themes: ["abstract concepts", "specialized topics", "cultural references", "idiomatic expressions"]
+          avoid: ["highly technical jargon without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "All grammatical structures"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "Full range including archaic forms in context"
+          specific_features:
+            - "Subtle mood distinctions"
+            - "Literary devices"
+            - "Regional variations understood"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Complete flexibility including literary inversions"
+          questions: "All types including implied"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Complete mastery of all forms"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "All forms including dialectal"
+          specific_features: "Native-like command of all structures"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "Full range"
+
+  french:
+    name: "French"
+    code: "fr"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present indicative"
+            - "Near future (aller + infinitive)"
+            - "Recent past (venir de + infinitive)"
+          avoid:
+            - "Subjunctive"
+            - "Conditional"
+            - "Simple past (passé simple)"
+            - "Past participle agreement"
+          verb_restrictions:
+            - "Regular -er verbs primarily"
+            - "Essential irregular: être, avoir, aller, faire, prendre"
+          pronouns:
+            - "Subject pronouns only"
+            - "Stressed pronouns (moi, toi)"
+          specific_features:
+            - "No pronoun 'y' or 'en'"
+            - "Simple negation (ne...pas)"
+            - "Basic articles only"
+        vocabulary:
+          themes: ["greetings", "numbers", "days/months", "family", "basic activities"]
+          avoid: ["formal register", "verlan", "complex liaison"]
+        syntax:
+          word_order: "Strict SVO"
+          questions: "Est-ce que and intonation only"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Passé composé"
+            - "Imparfait (basic uses)"
+            - "Future simple"
+            - "Imperative"
+          avoid:
+            - "Subjunctive"
+            - "Plus-que-parfait"
+            - "Conditional past"
+          verb_restrictions:
+            - "Common irregular verbs"
+            - "Reflexive verbs (daily routines)"
+          pronouns:
+            - "Direct object pronouns (le, la, les)"
+            - "Indirect object pronouns (basic)"
+          specific_features:
+            - "Pronouns 'y' and 'en' (basic uses)"
+            - "Comparative and superlative"
+            - "Partitive articles"
+        vocabulary:
+          themes: ["shopping", "directions", "weather", "hobbies", "simple descriptions"]
+          avoid: ["literary vocabulary", "technical terms"]
+        syntax:
+          word_order: "Some pronoun placement variations"
+          questions: "Inversion for common verbs"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All indicative tenses"
+            - "Conditional present"
+            - "Subjunctive present (after common triggers)"
+          avoid:
+            - "Literary tenses (passé simple in production)"
+            - "Subjunctive past"
+          verb_restrictions:
+            - "Most irregular verbs"
+            - "All reflexive verbs"
+          pronouns:
+            - "Double object pronouns"
+            - "Relative pronouns (qui, que, dont, où)"
+          specific_features:
+            - "Gérondif and participe présent"
+            - "Passive voice"
+            - "Reported speech (basic)"
+        vocabulary:
+          themes: ["work", "studies", "media", "opinions", "experiences"]
+          avoid: ["highly formal register", "slang"]
+        syntax:
+          word_order: "Flexible with pronouns"
+          questions: "All question forms"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses including literary"
+            - "All subjunctive forms"
+            - "All conditional forms"
+          avoid:
+            - "Archaic forms (unless in literature)"
+          verb_restrictions: "None"
+          pronouns:
+            - "All pronouns including compound relatives"
+            - "Demonstrative pronouns"
+          specific_features:
+            - "Complex agreement rules"
+            - "Nuanced use of modes"
+            - "Register variations"
+        vocabulary:
+          themes: ["abstract ideas", "argumentation", "cultural topics", "current affairs"]
+          avoid: ["extreme slang without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete range"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "All forms including literary"
+          specific_features:
+            - "Subtle register shifts"
+            - "Literary devices"
+            - "Regional variations recognized"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms including implied"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native command"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "Complete mastery"
+          specific_features: "Native-like intuition for all structures"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  german:
+    name: "German"
+    code: "de"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present tense"
+            - "Present perfect (basic)"
+            - "Modal verbs (present)"
+          avoid:
+            - "Subjunctive (Konjunktiv)"
+            - "Passive voice"
+            - "Genitive case"
+            - "Past perfect"
+          verb_restrictions:
+            - "Regular verbs primarily"
+            - "Common irregular: sein, haben, werden"
+            - "Basic modals: können, müssen, wollen"
+          cases:
+            - "Nominative and accusative only"
+            - "No genitive"
+            - "Dative only with prepositions"
+          specific_features:
+            - "Simple word order (V2 rule basics)"
+            - "No subordinate clauses"
+            - "Basic separable verbs"
+        vocabulary:
+          themes: ["personal data", "family", "daily life", "numbers", "time"]
+          avoid: ["compound words over 2 elements", "abstract nouns"]
+        syntax:
+          word_order: "Basic V2 in main clauses"
+          questions: "Simple yes/no and W-questions"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Simple past (Präteritum) of common verbs"
+            - "Future with 'werden'"
+            - "Imperative"
+          avoid:
+            - "Subjunctive II (except hätte, wäre)"
+            - "Complex passive constructions"
+          verb_restrictions:
+            - "Common irregular verbs"
+            - "All modal verbs"
+            - "Reflexive verbs"
+          cases:
+            - "All four cases in basic usage"
+            - "Prepositions with fixed cases"
+          specific_features:
+            - "Simple subordinate clauses (weil, dass)"
+            - "Two-way prepositions"
+            - "Comparative and superlative"
+        vocabulary:
+          themes: ["shopping", "travel", "health", "work", "education"]
+          avoid: ["technical terminology", "complex compounds"]
+        syntax:
+          word_order: "V2 and basic verb-final in subordinates"
+          questions: "All basic question types"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All indicative tenses"
+            - "Konjunktiv II (common forms)"
+            - "Passive voice (werden-passive)"
+          avoid:
+            - "Konjunktiv I (except reported speech basics)"
+            - "Complex participle constructions"
+          verb_restrictions:
+            - "All common irregular verbs"
+            - "Verb prefixes (separable and inseparable)"
+          cases:
+            - "All cases with complex usage"
+            - "Adjective declension"
+          specific_features:
+            - "Multiple subordinate clauses"
+            - "Relative clauses"
+            - "Infinitive constructions (zu + infinitive)"
+        vocabulary:
+          themes: ["media", "environment", "society", "culture", "opinions"]
+          avoid: ["highly specialized vocabulary"]
+        syntax:
+          word_order: "Complex sentence structures"
+          questions: "Indirect questions"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses and moods"
+            - "Konjunktiv I for reported speech"
+            - "Sein-passive and alternatives"
+          avoid:
+            - "Archaic forms"
+          verb_restrictions: "None"
+          cases:
+            - "All cases with full complexity"
+            - "Genitive in formal contexts"
+          specific_features:
+            - "Extended adjective constructions"
+            - "Nominalization"
+            - "Complex compound words"
+        vocabulary:
+          themes: ["abstract concepts", "specialized topics", "idiomatic expressions"]
+          avoid: ["extreme dialectal forms"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete mastery"
+          avoid: "None"
+          verb_restrictions: "None"
+          cases: "Native-like usage"
+          specific_features:
+            - "Stylistic variations"
+            - "Register-appropriate structures"
+            - "Regional variations understood"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native command"
+          avoid: "None"
+          verb_restrictions: "None"
+          cases: "Complete intuitive mastery"
+          specific_features: "Native speaker competence"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  italian:
+    name: "Italian"
+    code: "it"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present indicative"
+            - "Present continuous (stare + gerund)"
+            - "Near future (informal)"
+          avoid:
+            - "Subjunctive"
+            - "Conditional"
+            - "Remote past (passato remoto)"
+            - "Passive voice"
+          verb_restrictions:
+            - "Regular -are, -ere, -ire verbs"
+            - "Essential irregular: essere, avere, fare, andare"
+          pronouns:
+            - "Subject pronouns (often omitted)"
+            - "Basic possessives"
+          specific_features:
+            - "Simple articles"
+            - "Basic prepositions"
+            - "Gender and number agreement (basic)"
+        vocabulary:
+          themes: ["greetings", "family", "food", "daily activities", "numbers"]
+          avoid: ["formal register", "regional dialects"]
+        syntax:
+          word_order: "SVO basic"
+          questions: "Intonation and simple question words"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Passato prossimo"
+            - "Imperfetto (basic uses)"
+            - "Future simple"
+            - "Imperative (informal)"
+          avoid:
+            - "Subjunctive"
+            - "Conditional past"
+            - "Trapassato"
+          verb_restrictions:
+            - "Common irregular verbs"
+            - "Reflexive verbs"
+          pronouns:
+            - "Direct object pronouns"
+            - "Indirect object pronouns (basic)"
+            - "Ci and ne (basic uses)"
+          specific_features:
+            - "Articulated prepositions"
+            - "Comparative and superlative"
+            - "Gerund (basic)"
+        vocabulary:
+          themes: ["shopping", "travel", "weather", "hobbies", "descriptions"]
+          avoid: ["literary vocabulary", "complex idioms"]
+        syntax:
+          word_order: "Some flexibility with pronouns"
+          questions: "All basic question forms"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All indicative tenses"
+            - "Conditional present"
+            - "Subjunctive present (common uses)"
+            - "Imperative (formal)"
+          avoid:
+            - "Subjunctive imperfect"
+            - "Literary tenses"
+          verb_restrictions:
+            - "Most irregular verbs"
+            - "Verbal expressions"
+          pronouns:
+            - "Combined pronouns"
+            - "Relative pronouns"
+            - "Indefinite pronouns"
+          specific_features:
+            - "Si passivante"
+            - "Reported speech (basic)"
+            - "Hypothetical sentences (type 1 and 2)"
+        vocabulary:
+          themes: ["work", "education", "opinions", "experiences", "culture"]
+          avoid: ["highly formal register", "technical jargon"]
+        syntax:
+          word_order: "Flexible with emphasis"
+          questions: "Complex question formation"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses including subjunctive imperfect"
+            - "All conditional forms"
+            - "Passato remoto (recognition/production)"
+          avoid:
+            - "Obsolete forms"
+          verb_restrictions: "None"
+          pronouns: "All types including particles"
+          specific_features:
+            - "Complex subjunctive use"
+            - "All hypothetical types"
+            - "Formal register mastery"
+        vocabulary:
+          themes: ["abstract concepts", "current affairs", "specialized topics", "idiomatic expressions"]
+          avoid: ["extreme dialectal forms without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete range"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "All forms including literary"
+          specific_features:
+            - "Register variations"
+            - "Regional differences understood"
+            - "Literary structures"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native mastery"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "Complete command"
+          specific_features: "Native speaker intuition"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  portuguese:
+    name: "Portuguese"
+    code: "pt"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present indicative"
+            - "Present continuous (estar + gerund)"
+            - "Near future (ir + infinitive)"
+          avoid:
+            - "Subjunctive"
+            - "Conditional"
+            - "Pluperfect"
+            - "Future subjunctive"
+          verb_restrictions:
+            - "Regular -ar, -er, -ir verbs"
+            - "Essential irregular: ser, estar, ter, fazer, ir"
+          pronouns:
+            - "Subject pronouns"
+            - "Basic possessives"
+          specific_features:
+            - "Ser vs estar (basic distinction)"
+            - "Definite and indefinite articles"
+            - "Simple contractions (do, da, no, na)"
+        vocabulary:
+          themes: ["personal info", "family", "daily routines", "numbers", "basic descriptions"]
+          avoid: ["Brazilian vs European differences", "formal register"]
+        syntax:
+          word_order: "SVO basic"
+          questions: "Simple interrogatives"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Pretérito perfeito"
+            - "Pretérito imperfeito (basic)"
+            - "Future with ir + infinitive"
+            - "Imperative"
+          avoid:
+            - "Subjunctive"
+            - "Conditional perfect"
+            - "Infinitive flexion"
+          verb_restrictions:
+            - "Common irregular verbs"
+            - "Reflexive verbs"
+          pronouns:
+            - "Direct object pronouns"
+            - "Indirect object pronouns (basic)"
+          specific_features:
+            - "Haver vs ter"
+            - "Progressive tenses"
+            - "Comparatives and superlatives"
+        vocabulary:
+          themes: ["shopping", "travel", "health", "work", "free time"]
+          avoid: ["literary vocabulary", "complex regionalisms"]
+        syntax:
+          word_order: "Basic pronoun placement"
+          questions: "All basic types"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All indicative tenses"
+            - "Present subjunctive"
+            - "Conditional simple"
+            - "Personal infinitive (basic)"
+          avoid:
+            - "Future subjunctive (production)"
+            - "Literary tenses"
+          verb_restrictions:
+            - "Most irregular verbs"
+            - "Phrasal verbs"
+          pronouns:
+            - "Pronoun placement rules"
+            - "Relative pronouns"
+            - "Indefinite pronouns"
+          specific_features:
+            - "Subjunctive triggers"
+            - "Reported speech"
+            - "Passive voice (ser + past participle)"
+        vocabulary:
+          themes: ["opinions", "experiences", "media", "environment", "relationships"]
+          avoid: ["highly technical terms", "archaic expressions"]
+        syntax:
+          word_order: "Flexible with pronouns"
+          questions: "Complex questions"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses including future subjunctive"
+            - "All conditional forms"
+            - "Inflected infinitive (full use)"
+          avoid:
+            - "Obsolete forms"
+          verb_restrictions: "None"
+          pronouns:
+            - "Mesoclisis and proclisis rules"
+            - "All pronoun types"
+          specific_features:
+            - "Complex subjunctive uses"
+            - "Register variations"
+            - "Brazilian vs European distinctions"
+        vocabulary:
+          themes: ["abstract concepts", "specialized topics", "idiomatic expressions", "cultural references"]
+          avoid: ["extreme regionalisms without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete mastery"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "Native-like command"
+          specific_features:
+            - "Subtle register shifts"
+            - "Regional variations mastered"
+            - "Literary structures"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native command"
+          avoid: "None"
+          verb_restrictions: "None"
+          pronouns: "Complete mastery"
+          specific_features: "Native intuition"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  hebrew:
+    name: "Hebrew"
+    code: "he"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present tense only"
+            - "Infinitive constructions"
+          avoid:
+            - "Future tense completely"
+            - "Past tense (except for common expressions)"
+            - "Passive voice (nif'al, pu'al, huf'al)"
+            - "Conditional structures"
+          verb_restrictions:
+            - "Only pa'al (qal) binyan"
+            - "Regular verb patterns only"
+            - "No root mutations"
+          specific_features:
+            - "No construct state (smichut)"
+            - "Simple possessives with 'shel'"
+            - "No dual number"
+            - "Basic gender agreement only"
+            - "Numbers 1-100 (masculine form only)"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["greetings", "family", "basic objects", "colors", "simple actions"]
+          avoid: ["roots with gutturals", "borrowed words", "formal register"]
+        syntax:
+          word_order: "Simple SVO"
+          questions: "Question words only (ma, mi, eifo, matai)"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Present tense (all binyanim)"
+            - "Simple past (pa'al only)"
+            - "Near future with 'holech + infinitive'"
+          avoid:
+            - "Future tense conjugations"
+            - "Complex passive constructions"
+            - "Subjunctive mood expressions"
+          verb_restrictions:
+            - "Pa'al and pi'el binyanim"
+            - "Common hif'il verbs"
+            - "No hitpa'el (reflexive)"
+          specific_features:
+            - "Simple construct state"
+            - "Possessive suffixes (basic)"
+            - "Cardinal numbers (both genders)"
+            - "Definite article usage"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["daily routines", "shopping", "directions", "time expressions", "basic descriptions"]
+          avoid: ["literary vocabulary", "complex compounds"]
+        syntax:
+          word_order: "Some flexibility"
+          questions: "Yes/no questions with 'ha'im'"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "Past tense (all binyanim)"
+            - "Future tense (regular patterns only)"
+            - "Imperative"
+          avoid:
+            - "Literary verb forms"
+            - "Rare binyan patterns"
+          verb_restrictions:
+            - "All seven binyanim"
+            - "Common root mutations"
+            - "Guttural root patterns"
+          specific_features:
+            - "Complex construct chains"
+            - "All possessive forms"
+            - "Ordinal numbers"
+            - "Basic conditional with 'im'"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["work", "education", "opinions", "experiences", "Israeli culture"]
+          avoid: ["biblical Hebrew", "technical jargon"]
+        syntax:
+          word_order: "Flexible with topicalization"
+          questions: "Indirect questions"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All tenses and aspects"
+            - "Modal constructions"
+            - "Conditional sentences"
+          avoid:
+            - "Archaic biblical forms"
+          verb_restrictions:
+            - "All patterns including rare"
+            - "Quadriliteral roots"
+          specific_features:
+            - "Register variation"
+            - "Formal vs informal address"
+            - "Complex nominal sentences"
+            - "All number systems"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["abstract concepts", "current affairs", "literature", "specialized topics"]
+          avoid: ["extreme slang without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete mastery including literary"
+          avoid: "None"
+          verb_restrictions: "None"
+          specific_features:
+            - "Biblical and modern registers"
+            - "Stylistic variations"
+            - "Wordplay and root manipulation"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native command"
+          avoid: "None"
+          verb_restrictions: "None"
+          specific_features: "Complete mastery of all registers"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  arabic:
+    name: "Arabic (Modern Standard)"
+    code: "ar"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present tense (mudari')"
+            - "Nominal sentences"
+          avoid:
+            - "Past tense initially"
+            - "Future markers"
+            - "Dual forms"
+            - "Case endings (i'rab)"
+            - "Passive voice"
+          verb_restrictions:
+            - "Sound trilateral roots only"
+            - "Form I verbs only"
+            - "No hollow or defective verbs"
+          specific_features:
+            - "No case markings"
+            - "Simple gender agreement"
+            - "Numbers 1-10 only"
+            - "Basic pronouns attached"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["greetings", "family", "basic objects", "simple actions"]
+          avoid: ["dialectal variations", "formal expressions"]
+        syntax:
+          word_order: "VSO simplified to SVO"
+          questions: "Question particles only"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Past tense (madi)"
+            - "Future with 'sa-' or 'sawfa'"
+            - "Imperative (basic)"
+          avoid:
+            - "Subjunctive mood"
+            - "Jussive mood"
+            - "Complex derived forms"
+          verb_restrictions:
+            - "Forms I, II, III"
+            - "Common hollow verbs"
+            - "Basic weak verbs"
+          specific_features:
+            - "Dual number (recognition)"
+            - "Construct state (idafa) basic"
+            - "Attached pronouns"
+            - "Numbers to 100"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["daily life", "shopping", "directions", "time", "weather"]
+          avoid: ["classical Arabic", "complex roots"]
+        syntax:
+          word_order: "VSO and SVO variation"
+          questions: "All basic question types"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All basic tenses"
+            - "Subjunctive (after certain particles)"
+            - "Jussive (basic uses)"
+          avoid:
+            - "Complex case endings"
+            - "Rare verb forms"
+          verb_restrictions:
+            - "Forms I-VI"
+            - "Doubled roots"
+            - "Most weak verb types"
+          specific_features:
+            - "Masdar (verbal nouns)"
+            - "Active and passive participles"
+            - "Complex idafa chains"
+            - "Basic case awareness"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["media", "education", "opinions", "Arab culture", "current events"]
+          avoid: ["highly classical forms", "rare patterns"]
+        syntax:
+          word_order: "Flexible word order"
+          questions: "Complex questions"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All moods and aspects"
+            - "Conditional sentences"
+            - "Passive voice (all forms)"
+          avoid:
+            - "Archaic patterns"
+          verb_restrictions:
+            - "Forms I-X"
+            - "Quadriliteral verbs"
+            - "All weak verb patterns"
+          specific_features:
+            - "Full case system (i'rab)"
+            - "Complex number agreement"
+            - "Tamyiz and hal constructions"
+            - "Emphasis patterns"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: ["abstract concepts", "politics", "literature", "specialized topics"]
+          avoid: ["pure dialectal forms"]
+        syntax:
+          word_order: "Full classical flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete mastery"
+          avoid: "None"
+          verb_restrictions: "All forms including rare"
+          specific_features:
+            - "Classical and modern registers"
+            - "Rhetorical devices"
+            - "Morphological manipulation"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native command"
+          avoid: "None"
+          verb_restrictions: "None"
+          specific_features: "Complete mastery of all registers"
+          syntax_direction: "right-to-left"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  chinese:
+    name: "Mandarin Chinese"
+    code: "zh"
+    levels:
+      A1:
+        grammar:
+          allowed_structures:
+            - "Simple SVO sentences"
+            - "是 (shi) sentences"
+            - "有 (you) for possession"
+            - "Basic time expressions"
+          avoid:
+            - "把 (ba) construction"
+            - "被 (bei) passive"
+            - "Aspect markers (except 了)"
+            - "Complements of result"
+            - "Serial verb constructions"
+          specific_features:
+            - "Character limit: 300-500 characters"
+            - "Radicals: most common 50"
+            - "Measure words: 个, 本, 只"
+            - "Simple 了 for completion"
+            - "Numbers and basic counters"
+          particles:
+            - "吗 for yes/no questions"
+            - "呢 for follow-up questions"
+            - "的 for possession only"
+        vocabulary:
+          themes: ["greetings", "family", "numbers", "time", "basic actions"]
+          avoid: ["chengyu (idioms)", "literary vocabulary", "complex compounds"]
+        syntax:
+          word_order: "Strict SVO"
+          questions: "Question particles and simple question words"
+      
+      A2:
+        grammar:
+          allowed_structures:
+            - "Time-manner-place word order"
+            - "了, 过, 着 aspect markers"
+            - "Simple complements"
+            - "在...呢 progressive"
+          avoid:
+            - "Complex ba/bei constructions"
+            - "Potential complements"
+            - "Complex resultative complements"
+          specific_features:
+            - "Character limit: 800-1000 characters"
+            - "Common measure words (20+)"
+            - "Reduplication for emphasis"
+            - "Simple comparisons with 比"
+            - "会, 能, 可以 for modality"
+          particles:
+            - "了 (perfective and change)"
+            - "过 (experiential)"
+            - "着 (durative)"
+        vocabulary:
+          themes: ["daily routines", "shopping", "directions", "hobbies", "simple descriptions"]
+          avoid: ["formal written Chinese", "classical references"]
+        syntax:
+          word_order: "STPVO (Subject-Time-Place-Verb-Object)"
+          questions: "All basic question types"
+      
+      B1:
+        grammar:
+          allowed_structures:
+            - "把 construction"
+            - "被 passive voice"
+            - "Directional complements"
+            - "Result complements"
+            - "Degree complements"
+          avoid:
+            - "Literary particles"
+            - "Classical Chinese structures"
+          specific_features:
+            - "Character limit: 1500-2000 characters"
+            - "All common measure words"
+            - "Complex time expressions"
+            - "虽然...但是 constructions"
+            - "Potential complements (得/不)"
+          particles:
+            - "All aspect markers"
+            - "Modal particles (啊, 吧, 呢, etc.)"
+        vocabulary:
+          themes: ["work", "education", "opinions", "experiences", "Chinese culture"]
+          avoid: ["highly literary expressions", "rare characters"]
+        syntax:
+          word_order: "Flexible with topic-comment"
+          questions: "Complex and indirect questions"
+      
+      B2:
+        grammar:
+          allowed_structures:
+            - "All complement types"
+            - "Serial verb constructions"
+            - "Pivotal sentences"
+            - "Complex clause combining"
+          avoid:
+            - "Archaic patterns"
+          specific_features:
+            - "Character limit: 2500-3000 characters"
+            - "Chengyu (common idioms)"
+            - "Written vs spoken register"
+            - "Complex ba/bei variations"
+            - "Emphasis and topicalization"
+          particles:
+            - "All particles including literary"
+            - "Sentence-final particles for mood"
+        vocabulary:
+          themes: ["abstract concepts", "current affairs", "specialized topics", "idiomatic expressions"]
+          avoid: ["extremely rare characters"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_structures: "All structures including literary"
+          avoid: "None"
+          specific_features:
+            - "Character limit: 3500+ characters"
+            - "Classical Chinese elements"
+            - "Register variation mastery"
+            - "Subtle pragmatic markers"
+          particles: "Complete range"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_structures: "Native command"
+          avoid: "None"
+          specific_features:
+            - "No character limitations"
+            - "Complete register control"
+            - "Literary and classical forms"
+          particles: "Native mastery"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  japanese:
+    name: "Japanese"
+    code: "ja"
+    levels:
+      A1:
+        grammar:
+          allowed_structures:
+            - "です/ます forms only"
+            - "Present and past tense"
+            - "Basic particles (は, を, に, で, から, まで)"
+          avoid:
+            - "Plain form"
+            - "Conditional forms"
+            - "Passive/causative"
+            - "Honorific/humble forms"
+            - "Relative clauses"
+          specific_features:
+            - "Hiragana and katakana only"
+            - "Kanji limit: 100 basic characters"
+            - "い-adjectives and な-adjectives (basic)"
+            - "Numbers and counters (basic)"
+            - "Time expressions"
+          particles:
+            - "は (topic)"
+            - "を (object)"
+            - "に (location/time)"
+            - "で (means/location)"
+        vocabulary:
+          themes: ["greetings", "self-introduction", "daily objects", "basic activities"]
+          avoid: ["keigo", "colloquialisms", "kanji compounds"]
+        syntax:
+          word_order: "SOV strict"
+          questions: "か particle and question words"
+      
+      A2:
+        grammar:
+          allowed_structures:
+            - "Plain form (dictionary form)"
+            - "て-form and progressives"
+            - "たい for desires"
+            - "Giving and receiving (basic)"
+          avoid:
+            - "Complex honorifics"
+            - "Causative-passive"
+            - "Literary forms"
+          specific_features:
+            - "Kanji limit: 300 characters"
+            - "Compound verbs (basic)"
+            - "Comparisons"
+            - "と思う for opinions"
+            - "ことがある for experience"
+          particles:
+            - "All basic particles"
+            - "も (also), や (and)"
+            - "が (but/subject)"
+        vocabulary:
+          themes: ["shopping", "travel", "hobbies", "weather", "simple descriptions"]
+          avoid: ["formal written Japanese", "specialized terms"]
+        syntax:
+          word_order: "Some flexibility"
+          questions: "All basic types"
+      
+      B1:
+        grammar:
+          allowed_structures:
+            - "Conditional forms (たら, ば, と, なら)"
+            - "Passive and causative"
+            - "Potential form"
+            - "Relative clauses"
+            - "Nominalizers (の, こと)"
+          avoid:
+            - "Classical Japanese"
+            - "Highly formal keigo"
+          specific_features:
+            - "Kanji limit: 800 characters"
+            - "Transitive/intransitive pairs"
+            - "Aspect markers"
+            - "Indirect speech"
+            - "Basic keigo"
+          particles:
+            - "All particles including compounds"
+            - "のに, ので, から reasoning"
+        vocabulary:
+          themes: ["work", "education", "opinions", "Japanese culture", "experiences"]
+          avoid: ["highly literary vocabulary", "archaic forms"]
+        syntax:
+          word_order: "Flexible with proper particles"
+          questions: "Complex and indirect"
+      
+      B2:
+        grammar:
+          allowed_structures:
+            - "All verb forms and combinations"
+            - "Formal keigo system"
+            - "Complex clause chaining"
+            - "Written vs spoken styles"
+          avoid:
+            - "Archaic forms (unless contextual)"
+          specific_features:
+            - "Kanji limit: 1500-2000 characters"
+            - "Honorific and humble forms"
+            - "Complex nominalization"
+            - "Idiomatic expressions"
+            - "Register switching"
+          particles:
+            - "All particles including formal/literary"
+        vocabulary:
+          themes: ["abstract concepts", "current affairs", "specialized topics", "formal contexts"]
+          avoid: ["extremely rare kanji"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including implied"
+      
+      C1:
+        grammar:
+          allowed_structures: "Complete range including literary"
+          avoid: "None"
+          specific_features:
+            - "Kanji: 2500+ characters"
+            - "Classical elements in modern usage"
+            - "Nuanced pragmatics"
+            - "Regional variations understood"
+          particles: "Complete mastery"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_structures: "Native command"
+          avoid: "None"
+          specific_features:
+            - "No kanji limitations"
+            - "Complete register control"
+            - "Literary and classical mastery"
+          particles: "Native intuition"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+  russian:
+    name: "Russian"
+    code: "ru"
+    levels:
+      A1:
+        grammar:
+          allowed_tenses:
+            - "Present tense"
+            - "Simple past (basic)"
+            - "Infinitives"
+          avoid:
+            - "Aspect distinctions"
+            - "Participles"
+            - "Gerunds"
+            - "Complex case usage"
+            - "Verbs of motion with prefixes"
+          case_system:
+            - "Nominative"
+            - "Accusative (basic)"
+            - "Prepositional (basic)"
+          specific_features:
+            - "Gender agreement (basic)"
+            - "Plural formation (regular)"
+            - "Personal pronouns"
+            - "Numbers 1-100"
+          verb_restrictions:
+            - "Common imperfective verbs"
+            - "No aspectual pairs focus"
+        vocabulary:
+          themes: ["greetings", "family", "basic objects", "daily activities", "basic descriptions"]
+          avoid: ["perfective/imperfective pairs", "colloquialisms", "diminutives"]
+        syntax:
+          word_order: "SVO basic"
+          questions: "Question words and intonation"
+      
+      A2:
+        grammar:
+          allowed_tenses:
+            - "Past tense (both aspects basic)"
+            - "Future (compound with быть)"
+            - "Imperative"
+          avoid:
+            - "Complex aspect usage"
+            - "Conditional mood"
+            - "Participles"
+          case_system:
+            - "All six cases (basic usage)"
+            - "Basic prepositions with cases"
+          specific_features:
+            - "Aspect pairs (introduction)"
+            - "Reflexive verbs"
+            - "Comparatives"
+            - "Basic verbs of motion"
+          verb_restrictions:
+            - "Common aspect pairs"
+            - "Unidirectional vs multidirectional motion"
+        vocabulary:
+          themes: ["shopping", "travel", "health", "hobbies", "weather", "time"]
+          avoid: ["literary vocabulary", "complex idioms"]
+        syntax:
+          word_order: "Some flexibility"
+          questions: "All basic types"
+      
+      B1:
+        grammar:
+          allowed_tenses:
+            - "All tenses"
+            - "Conditional mood"
+            - "Subjunctive (бы constructions)"
+          avoid:
+            - "Complex participles"
+            - "Archaic forms"
+          case_system:
+            - "All cases with complex usage"
+            - "Motion verbs with prefixes"
+          specific_features:
+            - "Full aspect system"
+            - "Verbal adverbs (basic)"
+            - "Passive constructions"
+            - "Numerals and case agreement"
+          verb_restrictions:
+            - "All common verbs"
+            - "Prefixed motion verbs"
+        vocabulary:
+          themes: ["work", "education", "culture", "opinions", "experiences", "media"]
+          avoid: ["highly specialized terms", "archaic vocabulary"]
+        syntax:
+          word_order: "Flexible with case markers"
+          questions: "Complex questions"
+      
+      B2:
+        grammar:
+          allowed_tenses:
+            - "All forms including participles"
+            - "Active and passive participles"
+            - "Verbal adverbs (full use)"
+          avoid:
+            - "Obsolete forms"
+          case_system:
+            - "Full mastery of case system"
+            - "Complex prepositional phrases"
+          specific_features:
+            - "Register variations"
+            - "Complex aspect nuances"
+            - "Diminutives and augmentatives"
+            - "Word formation patterns"
+          verb_restrictions: "None"
+        vocabulary:
+          themes: ["abstract concepts", "current affairs", "literature", "specialized topics"]
+          avoid: ["extreme slang without context"]
+        syntax:
+          word_order: "Full flexibility"
+          questions: "All types including rhetorical"
+      
+      C1:
+        grammar:
+          allowed_tenses: "Complete range"
+          avoid: "None"
+          case_system: "Native-like usage"
+          specific_features:
+            - "Stylistic variations"
+            - "Church Slavonic elements"
+            - "Regional variations understood"
+          verb_restrictions: "None"
+        vocabulary:
+          themes: "Unrestricted"
+          avoid: "None"
+        syntax:
+          word_order: "Native-like flexibility"
+          questions: "All forms"
+      
+      C2:
+        grammar:
+          allowed_tenses: "Native mastery"
+          avoid: "None"
+          case_system: "Complete intuitive command"
+          specific_features: "Native speaker competence"
+          verb_restrictions: "None"
+        vocabulary:
+          themes: "Complete range"
+          avoid: "None"
+        syntax:
+          word_order: "Full native flexibility"
+          questions: "Complete range"
+
+adaptation_strategies:
+  simplification_techniques:
+    vocabulary:
+      - "Replace low-frequency words with high-frequency synonyms"
+      - "Use concrete rather than abstract terms at lower levels"
+      - "Prefer transparent compounds over opaque ones"
+      - "Use cognates and international words at A1-A2"
+    grammar:
+      - "Break complex sentences into simple ones"
+      - "Replace subordination with coordination at lower levels"
+      - "Use active voice instead of passive at A1-B1"
+      - "Simplify tense usage to present/past/future at lower levels"
+    syntax:
+      - "Maintain canonical word order at lower levels"
+      - "Reduce sentence length progressively"
+      - "Eliminate embedded clauses at A1-A2"
+      - "Use explicit subjects rather than pro-drop"
+
+  complexity_enhancement:
+    vocabulary:
+      - "Introduce specialized terminology"
+      - "Use idiomatic expressions"
+      - "Include cultural references"
+      - "Add register-appropriate vocabulary"
+    grammar:
+      - "Combine simple sentences into complex ones"
+      - "Add subordinate clauses"
+      - "Use full range of tenses and moods"
+      - "Include passive and impersonal constructions"
+    syntax:
+      - "Vary sentence structure for style"
+      - "Use topicalization and emphasis"
+      - "Include rhetorical devices"
+      - "Apply register-appropriate structures"
+
+prompt_engineering_templates:
+  basic_adaptation:
+    template: |
+      You are a language learning specialist. Adapt the following text to {target_level} level {language}.
+      
+      Constraints:
+      - Vocabulary: Use only the top {word_limit} most frequent words
+      - Grammar: Restrict to {allowed_tenses}
+      - Sentence length: Maximum {max_sentence_length} words
+      - Avoid: {structures_to_avoid}
+      
+      Original text: {text}
+      
+      Provide the adapted version maintaining the core meaning.
+  
+  level_verification:
+    template: |
+      Analyze this {language} text and verify it meets {level} requirements:
+      
+      Check for:
+      - Vocabulary outside the {word_limit} frequency range
+      - Grammar structures beyond {level} (specifically: {forbidden_structures})
+      - Sentences exceeding {max_length} words
+      - Cultural references requiring {level}+ knowledge
+      
+      Text: {text}
+      
+      List any violations found.
+
+quality_metrics:
+  comprehensibility:
+    - "95% of vocabulary within target frequency band"
+    - "All grammar structures appropriate for level"
+    - "Sentence length within specified limits"
+    - "Coherence maintained despite simplification"
+  
+  authenticity:
+    - "Natural-sounding target language"
+    - "Culturally appropriate adaptations"
+    - "Register consistency"
+    - "Pragmatic appropriateness"
+  
+  pedagogical_value:
+    - "i+1 principle (slightly above current level)"
+    - "Recycling of key structures"
+    - "Clear progression between levels"
+    - "Motivating and engaging content"

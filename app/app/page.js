@@ -286,7 +286,7 @@ export default function AppPage() {
       const response = await fetch('/api/adapt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language, level }),
+        body: JSON.stringify({ text, language, level, motherTongue }),
       });
 
       const data = await response.json();

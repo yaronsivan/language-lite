@@ -1,0 +1,142 @@
+# Agentic Architecture Configuration for Language Lite
+# This file defines the multi-agent system for text adaptation
+
+agents:
+  adaptation_agent:
+    name: "Text Adaptation Specialist"
+    role: "Adapts texts according to linguistic rules and level requirements"
+    capabilities:
+      - text_simplification
+      - vocabulary_adjustment
+      - grammar_level_control
+      - cultural_adaptation
+    inputs:
+      - original_text
+      - target_language
+      - proficiency_level
+      - mother_tongue
+      - linguistic_rules
+    outputs:
+      - adapted_text
+      - adaptation_notes
+      - confidence_score
+    max_iterations: 2
+
+  review_agent:
+    name: "Language Teacher Reviewer"
+    role: "Reviews adapted text from pedagogical perspective"
+    capabilities:
+      - pedagogical_assessment
+      - difficulty_evaluation
+      - learning_progression_check
+      - cultural_appropriateness
+    inputs:
+      - adapted_text
+      - original_text
+      - target_language
+      - proficiency_level
+      - adaptation_notes
+    outputs:
+      - review_decision # approve, revise, reject
+      - feedback_notes
+      - suggested_improvements
+      - pedagogical_score
+    decisions:
+      approve: "Text meets all pedagogical requirements"
+      revise: "Text needs minor adjustments"
+      reject: "Text requires significant rework"
+
+  vocabulary_agent:
+    name: "Vocabulary Specialist"
+    role: "Identifies and translates new vocabulary for learners"
+    capabilities:
+      - vocabulary_extraction
+      - difficulty_assessment
+      - translation_generation
+      - context_analysis
+    inputs:
+      - adapted_text
+      - target_language
+      - proficiency_level
+      - mother_tongue
+    outputs:
+      - vocabulary_list
+      - translations
+      - difficulty_ratings
+      - usage_examples
+
+workflows:
+  text_adaptation:
+    name: "Complete Text Adaptation Workflow"
+    description: "Full pipeline for adapting text with review cycles"
+    
+    phases:
+      - phase_1:
+          name: "Initial Adaptation"
+          agent: adaptation_agent
+          inputs:
+            - original_text
+            - target_language
+            - proficiency_level
+            - mother_tongue
+          success_criteria:
+            - word_count_compliance
+            - paragraph_structure_preserved
+            - linguistic_rules_followed
+          
+      - phase_2:
+          name: "Pedagogical Review"
+          agent: review_agent
+          inputs:
+            - adapted_text_from_phase_1
+            - original_text
+            - target_language
+            - proficiency_level
+          decision_logic:
+            - if_approve: proceed_to_phase_3
+            - if_revise: return_to_phase_1_with_feedback
+            - if_reject: return_to_phase_1_with_feedback
+          max_revision_cycles: 2
+          
+      - phase_3:
+          name: "Vocabulary Extraction"
+          agent: vocabulary_agent
+          inputs:
+            - approved_adapted_text
+            - target_language
+            - proficiency_level
+            - mother_tongue
+          outputs:
+            - final_adapted_text
+            - vocabulary_list_with_translations
+
+requirements:
+  word_count:
+    short_texts: # Under 200 words
+      target: 200
+      tolerance: 10 # ±10 words
+    long_texts: # 200+ words
+      reduction: 20 # 20% fewer words than original
+      tolerance: 5 # ±5%
+  
+  structure:
+    paragraph_count: "maintain_original"
+    paragraph_breaks: "preserve_location"
+    overall_flow: "maintain_coherence"
+  
+  quality_metrics:
+    linguistic_accuracy: 0.9
+    pedagogical_appropriateness: 0.85
+    vocabulary_difficulty: "level_appropriate"
+    cultural_sensitivity: 0.9
+
+error_handling:
+  max_total_iterations: 5
+  timeout_seconds: 180
+  fallback_strategy: "return_best_attempt_with_notes"
+  
+logging:
+  level: "info"
+  track_iterations: true
+  save_intermediate_results: true
+  performance_metrics: true
