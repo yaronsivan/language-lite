@@ -476,6 +476,8 @@
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'getSelectedText') {
       sendResponse({ text: selectedText });
+    } else if (request.action === 'hideFloatingButton') {
+      hideAdaptButton();
     } else if (request.action === 'showLoadingSidebar') {
       showLoadingSidebar(request.originalText || selectedText);
     } else if (request.action === 'showAdaptedText') {

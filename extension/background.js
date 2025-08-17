@@ -138,13 +138,16 @@ async function adaptTextFromContextMenu(text, tabId) {
   try {
     console.log('adaptTextFromContextMenu called with:', { textLength: text?.length, tabId });
     
-    // First show loading sidebar
+    // First hide any floating button and show loading sidebar
     try {
+      chrome.tabs.sendMessage(tabId, { 
+        action: 'hideFloatingButton'
+      });
       chrome.tabs.sendMessage(tabId, { 
         action: 'showLoadingSidebar',
         originalText: text 
       });
-      console.log('Sent showLoadingSidebar message');
+      console.log('Sent hideFloatingButton and showLoadingSidebar messages');
     } catch (error) {
       // Content script not loaded, inject it
       console.log('Content script not loaded, injecting...', error);
@@ -162,12 +165,15 @@ async function adaptTextFromContextMenu(text, tabId) {
       // Small delay to ensure scripts are loaded
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      // Now try to show loading sidebar again
+      // Now try to hide button and show loading sidebar again
+      chrome.tabs.sendMessage(tabId, { 
+        action: 'hideFloatingButton'
+      });
       chrome.tabs.sendMessage(tabId, { 
         action: 'showLoadingSidebar',
         originalText: text 
       });
-      console.log('Sent showLoadingSidebar message after injection');
+      console.log('Sent hideFloatingButton and showLoadingSidebar messages after injection');
     }
     
     const result = await adaptText(text, tabId);
