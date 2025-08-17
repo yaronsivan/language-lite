@@ -30,18 +30,31 @@ export default function HomePage() {
       })
       .catch(err => console.error('Error loading demo content:', err));
 
-    // Check for referral code in URL
+    // Check for URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const referralCode = urlParams.get('ref');
+    const extensionParam = urlParams.get('extension');
+    
     if (referralCode) {
       localStorage.setItem('referralCode', referralCode);
+    }
+    
+    if (extensionParam) {
+      localStorage.setItem('extensionConnection', 'true');
     }
 
     // Check if user is already authenticated
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        window.location.href = '/app';
+        // Check if this is for extension connection
+        const extensionConnection = localStorage.getItem('extensionConnection');
+        if (extensionConnection) {
+          localStorage.removeItem('extensionConnection');
+          window.location.href = '/extension-auth';
+        } else {
+          window.location.href = '/app';
+        }
       }
     };
     checkAuth();
@@ -67,7 +80,15 @@ export default function HomePage() {
             console.error('Error claiming referral:', error);
           }
         }
-        window.location.href = '/app';
+        
+        // Check if this is for extension connection
+        const extensionConnection = localStorage.getItem('extensionConnection');
+        if (extensionConnection) {
+          localStorage.removeItem('extensionConnection');
+          window.location.href = '/extension-auth';
+        } else {
+          window.location.href = '/app';
+        }
       }
     });
 

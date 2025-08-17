@@ -1,3 +1,10 @@
+#!/bin/bash
+# Switch extension to production mode
+
+echo "Switching extension to PRODUCTION mode..."
+
+# Create production manifest
+cat > manifest.json << 'EOF'
 {
   "manifest_version": 3,
   "name": "Language Lite - Text Adapter",
@@ -37,3 +44,9 @@
     "128": "icon-128.png"
   }
 }
+EOF
+
+echo "✅ Extension is now in PRODUCTION mode"
+echo "📝 Using https://language-lite.com as API base URL"
+echo ""
+echo "To switch to development, run: ./use-dev.sh"

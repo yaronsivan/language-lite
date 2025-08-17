@@ -5,10 +5,23 @@ import { supabase } from '../../lib/supabase';
 export default function ExtensionAuth() {
   const [status, setStatus] = useState('checking');
   const [error, setError] = useState(null);
+  const [shortCode, setShortCode] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(15);
 
   useEffect(() => {
     handleAuth();
   }, []);
+
+  useEffect(() => {
+    // Countdown timer for code expiry
+    if (status === 'ready' && timeRemaining > 0) {
+      const timer = setTimeout(() => {
+        setTimeRemaining(timeRemaining - 1);
+      }, 60000); // Update every minute
+      return () => clearTimeout(timer);
+    }
+  }, [status, timeRemaining]);
 
   const handleAuth = async () => {
     try {
@@ -26,40 +39,38 @@ export default function ExtensionAuth() {
         return;
       }
 
-      // Send token to extension
-      if (window.chrome && chrome.runtime) {
-        // Get extension ID from URL params
-        const urlParams = new URLSearchParams(window.location.search);
-        const extensionId = urlParams.get('extension_id') || 'YOUR_EXTENSION_ID';
-        
-        // Send message to extension with token
-        chrome.runtime.sendMessage(
-          extensionId,
-          { 
-            action: 'setAuthToken',
-            token: session.access_token 
-          },
-          (response) => {
-            if (response && response.success) {
-              setStatus('success');
-              // Close window after success
-              setTimeout(() => {
-                window.close();
-              }, 1500);
-            } else {
-              throw new Error('Failed to send token to extension');
-            }
-          }
-        );
-      } else {
-        // Fallback: Display token for manual copy
-        setStatus('manual');
-        navigator.clipboard.writeText(session.access_token);
+      // Generate short code via API
+      const response = await fetch('/api/extension-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action: 'generate' })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate code');
       }
+
+      const { code, expiresIn } = await response.json();
+      setShortCode(code);
+      setTimeRemaining(expiresIn);
+      setStatus('ready');
     } catch (err) {
       console.error('Auth error:', err);
       setError(err.message);
       setStatus('error');
+    }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shortCode);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -85,31 +96,39 @@ export default function ExtensionAuth() {
         
         {status === 'not_authenticated' && (
           <div className="text-center">
-            <div className="text-yellow-500 text-4xl mb-4">⚠️</div>
             <p className="text-gray-700 mb-2">You need to log in first</p>
             <p className="text-sm text-gray-500">Redirecting to login...</p>
           </div>
         )}
         
-        {status === 'success' && (
+        {status === 'ready' && (
           <div className="text-center">
-            <div className="text-green-500 text-4xl mb-4">✓</div>
-            <p className="text-gray-700 mb-2">Extension authenticated successfully!</p>
-            <p className="text-sm text-gray-500">You can close this window</p>
-          </div>
-        )}
-        
-        {status === 'manual' && (
-          <div className="text-center">
-            <div className="text-blue-500 text-4xl mb-4">📋</div>
-            <p className="text-gray-700 mb-2">Token copied to clipboard!</p>
-            <p className="text-sm text-gray-500">Please paste it in the extension manually</p>
+            <div className="text-blue-500 text-2xl mb-4">🔑</div>
+            <h2 className="text-lg font-semibold mb-3">Extension Code</h2>
+            <p className="text-gray-600 text-sm mb-4">
+              Enter this code in your Chrome extension:
+            </p>
+            
+            <div className="bg-gray-100 rounded-lg p-6 mb-4">
+              <div className="text-3xl font-bold font-mono tracking-wider">
+                {shortCode}
+              </div>
+            </div>
+            
             <button 
-              onClick={() => window.close()}
-              className="mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+              onClick={copyToClipboard}
+              className={`w-full px-4 py-2 rounded font-medium transition-colors ${
+                copySuccess 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-orange-500 text-white hover:bg-orange-600'
+              }`}
             >
-              Close Window
+              {copySuccess ? 'Copied! ✓' : 'Copy Code'}
             </button>
+            
+            <p className="text-xs text-gray-500 mt-3">
+              Expires in {timeRemaining} minutes
+            </p>
           </div>
         )}
         

@@ -316,12 +316,42 @@
   
   <div class="content">
     <div id="login-prompt" class="login-prompt" style="display: none;">
-      <p>Please connect the extension to Language Lite</p>
-      <button class="btn-primary" id="login-btn">Connect Extension</button>
-      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-        <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Or paste the copied auth info:</p>
-        <textarea id="token-input" placeholder="Paste the copied text here (Token: ... Mother Tongue: ...)" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 11px; margin-bottom: 8px; resize: vertical; font-family: monospace;"></textarea>
-        <button class="btn-secondary" id="manual-token-btn" style="width: 100%; font-size: 12px;">Connect with Auth Info</button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h3 style="margin: 0 0 8px 0; color: #dc2626; font-size: 16px; font-weight: 600;">Not Connected</h3>
+        <p style="color: #6b7280; font-size: 14px; margin: 0;">Connect your extension to Language Lite to start adapting text</p>
+      </div>
+      
+      <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+        <div style="font-weight: 600; color: #374151; margin-bottom: 12px;">Follow these steps:</div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+          <div style="background: #ffb238; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 12px;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 500; color: #374151;">Login to Language Lite</div>
+            <button class="btn-primary" id="login-btn" style="margin-top: 4px; padding: 4px 12px; font-size: 12px;">Open Webapp & Login</button>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+          <div style="background: #ffb238; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 12px;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 500; color: #374151;">Copy the extension code</div>
+            <div style="font-size: 12px; color: #6b7280;">It will appear automatically after login</div>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <div style="background: #ffb238; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 12px;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 500; color: #374151;">Paste it here</div>
+            <div style="font-size: 12px; color: #6b7280;">Use the field below</div>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <textarea id="token-input" placeholder="Paste your extension code here..." style="width: 100%; height: 60px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 11px; margin-bottom: 8px; resize: vertical; font-family: monospace;"></textarea>
+        <button class="btn-primary" id="manual-token-btn" style="width: 100%; font-size: 14px;">Connect Extension</button>
       </div>
     </div>
     

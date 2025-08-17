@@ -1,6 +1,6 @@
 // Popup script - handles extension popup interactions
 
-const API_BASE_URL = 'https://language-lite.com';
+const API_BASE_URL = 'http://localhost:3000'; // Change to https://language-lite.com for production
 
 // Load saved preferences and auth state
 document.addEventListener('DOMContentLoaded', async () => {
@@ -229,8 +229,8 @@ function showError(message) {
 
 // Open the main app
 function openApp() {
-  // Open the main app and show instructions
-  chrome.tabs.create({ url: `${API_BASE_URL}/app` });
+  // Open the extension auth page
+  chrome.tabs.create({ url: `${API_BASE_URL}/extension-auth` });
 }
 
 // Load and display user credits
@@ -297,43 +297,81 @@ async function handleLogout() {
 // Handle manual token input
 async function handleManualToken() {
   const tokenInput = document.getElementById('token-input');
-  const inputText = tokenInput.value.trim();
+  const inputText = tokenInput.value.trim().toUpperCase();
   
   if (!inputText) {
-    showError('Please paste the auth info');
+    showError('Please paste the extension code');
     return;
   }
   
   try {
     let token, motherTongue;
     
-    // Check if it's formatted text from clipboard
-    if (inputText.includes('Token:') && inputText.includes('Mother Tongue:')) {
-      // Parse formatted text
-      const tokenMatch = inputText.match(/Token:\s*(.+?)(?:\n|$)/);
-      const motherTongueMatch = inputText.match(/Mother Tongue:\s*(.+?)(?:\n|$)/);
+    // Check if it's a short code (6 characters, alphanumeric)
+    if (/^[A-Z0-9]{6}$/.test(inputText)) {
+      // Validate short code with API
+      const response = await fetch(`${API_BASE_URL}/api/extension-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: 'validate',
+          code: inputText 
+        })
+      });
       
-      token = tokenMatch ? tokenMatch[1].trim() : null;
-      motherTongue = motherTongueMatch ? motherTongueMatch[1].trim() : null;
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 410) {
+          showError('Code has expired. Please generate a new one.');
+        } else if (response.status === 404) {
+          showError('Invalid code. Please check and try again.');
+        } else {
+          showError(errorData.error || 'Failed to validate code');
+        }
+        return;
+      }
       
-      console.log('Parsed from formatted text:', { token: token?.substring(0, 20) + '...', motherTongue });
+      const data = await response.json();
+      token = data.token;
+      motherTongue = data.motherTongue;
+      
+      console.log('Validated short code:', { hasToken: true, motherTongue });
     } else {
-      // Assume it's just a token
-      token = inputText;
-      motherTongue = null;
-      console.log('Using as plain token:', token.substring(0, 20) + '...');
+      // Fallback for old token formats (for backwards compatibility)
+      if (inputText.includes('TOKEN:')) {
+        const tokenMatch = inputText.match(/TOKEN:\s*(.+?)(?:\n|$)/);
+        token = tokenMatch ? tokenMatch[1].trim() : null;
+        motherTongue = 'English';
+      } else {
+        // Assume it's a raw token
+        token = inputText;
+        motherTongue = 'English';
+      }
     }
     
     if (!token) {
-      showError('Could not find token in the pasted text');
+      showError('Invalid code format. Please copy a new code from the webapp.');
       return;
     }
     
     // Verify the token
+    console.log('Verifying token with API...', { 
+      url: `${API_BASE_URL}/api/auth/verify`,
+      tokenLength: token?.length,
+      tokenPreview: token?.substring(0, 20) + '...'
+    });
+    
     const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
+    });
+    
+    console.log('Verification response:', { 
+      status: response.status, 
+      ok: response.ok 
     });
     
     if (response.ok) {
@@ -350,7 +388,12 @@ async function handleManualToken() {
       // Reload the popup to show authenticated state
       window.location.reload();
     } else {
-      showError('Invalid token. Please try again.');
+      const errorData = await response.json();
+      console.error('Token verification failed:', { 
+        status: response.status, 
+        error: errorData 
+      });
+      showError(`Token verification failed: ${errorData.error || 'Please try again.'}`);
     }
   } catch (error) {
     console.error('Token verification failed:', error);

@@ -1,6 +1,6 @@
 // Background service worker - handles extension-wide events
 
-const API_BASE_URL = 'https://language-lite.com';
+const API_BASE_URL = 'http://localhost:3000'; // Change to https://language-lite.com for production
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener(() => {
@@ -180,21 +180,27 @@ async function adaptTextFromContextMenu(text, tabId) {
     
     if (!result.success) {
       // Show error notification (with proper parameters)
-      chrome.notifications.create('adapt-error', {
-        type: 'basic',
-        iconUrl: 'icon-48.png',
-        title: 'Language Lite',
-        message: 'Failed to adapt text. Please check your connection and try again.'
-      });
+      if (chrome.notifications && chrome.notifications.create) {
+        chrome.notifications.create('adapt-error', {
+          type: 'basic',
+          iconUrl: 'icon-48.png',
+          title: 'Language Lite',
+          message: 'Failed to adapt text. Please check your connection and try again.'
+        });
+      } else {
+        console.error('Failed to adapt text:', result.error);
+      }
     }
   } catch (error) {
     console.error('Context menu adaptation error:', error);
-    chrome.notifications.create('adapt-page-error', {
-      type: 'basic',
-      iconUrl: 'icon-48.png',
-      title: 'Language Lite',
-      message: 'Error: Could not adapt text on this page.'
-    });
+    if (chrome.notifications && chrome.notifications.create) {
+      chrome.notifications.create('adapt-page-error', {
+        type: 'basic',
+        iconUrl: 'icon-48.png',
+        title: 'Language Lite',
+        message: 'Error: Could not adapt text on this page.'
+      });
+    }
   }
 }
 
