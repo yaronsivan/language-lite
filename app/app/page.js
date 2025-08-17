@@ -1066,7 +1066,7 @@ export default function AppPage() {
               </button>
               
               <p className="text-xs text-gray-500 mt-4">
-                Don't have the extension? 
+                Don&apos;t have the extension? 
                 <a href="#" className="text-blue-500 hover:underline ml-1">Get it here</a>
               </p>
             </div>
