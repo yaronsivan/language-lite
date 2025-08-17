@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Language Lite - Text Adapter",
+  "name": "Language Lite - Text Adapter (DEV)",
   "version": "1.0.0",
-  "description": "Adapt any text to your reading level instantly",
+  "description": "Adapt any text to your reading level instantly - DEVELOPMENT VERSION",
   "permissions": [
     "activeTab",
     "contextMenus",
@@ -11,7 +11,9 @@
     "notifications"
   ],
   "host_permissions": [
-    "https://language-lite.com/*"
+    "http://localhost:3000/*",
+    "http://localhost:3001/*",
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
