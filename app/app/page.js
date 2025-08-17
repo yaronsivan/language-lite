@@ -440,9 +440,19 @@ export default function AppPage() {
     setLastAdaptedLevel(level);
 
     try {
+      // Get current session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Please log in to use the adaptation feature');
+      }
+
       const response = await fetch('/api/adapt', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({ text, language, level, motherTongue }),
       });
 
