@@ -1,10 +1,28 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import analytics from '../../lib/analytics';
 
 export default function UpgradePage() {
   const [showUnavailable, setShowUnavailable] = useState(false);
 
+  useEffect(() => {
+    // Track upgrade page visit
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source') || 'direct';
+    
+    analytics.trackUpgradePageVisit(source, {
+      referrer: document.referrer,
+      timestamp: new Date().toISOString()
+    });
+  }, []);
+
   const handleUpgrade = () => {
+    // Track upgrade button click
+    analytics.trackUpgradeButtonClick({
+      priceDisplayed: '$5',
+      features: '200_adaptations_per_month',
+      source: 'upgrade_page'
+    });
     setShowUnavailable(true);
   };
 
@@ -43,7 +61,7 @@ export default function UpgradePage() {
           <div className="bg-gradient-to-r from-yellow-400 to-orange-400 p-6 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Premium Plan</h2>
             <div className="text-white">
-              <span className="text-4xl font-bold">$1</span>
+              <span className="text-4xl font-bold">$5</span>
               <span className="text-lg">/month</span>
             </div>
             <p className="text-yellow-100 mt-2">Cancel anytime</p>
@@ -56,7 +74,7 @@ export default function UpgradePage() {
                 <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                 </svg>
-                Unlimited text adaptations
+                200 text adaptations per month
               </li>
               <li className="flex items-center text-gray-700">
                 <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">

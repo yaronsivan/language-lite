@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import yaml from 'js-yaml';
+import analytics from '../lib/analytics';
 
 // Available languages from your app
 const LANGUAGES = [
@@ -21,6 +22,12 @@ export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Track signup page view
+    analytics.trackSignupPageView({
+      referrer: document.referrer,
+      userAgent: navigator.userAgent
+    });
+
     // Load demo content
     fetch('/demo-content.yaml')
       .then(res => res.text())
@@ -62,6 +69,11 @@ export default function HomePage() {
     // Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user && event === 'SIGNED_IN') {
+        // Track successful signup
+        analytics.trackSignupComplete('oauth', {
+          provider: session.user.app_metadata?.provider || 'unknown',
+          email: session.user.email
+        });
         // Handle referral claim if there's a stored referral code
         const storedReferralCode = localStorage.getItem('referralCode');
         if (storedReferralCode) {
@@ -246,7 +258,30 @@ export default function HomePage() {
           </div>
 
           {/* Auth Component */}
-          <div className="space-y-4">
+          <div 
+            className="space-y-4"
+            onClick={(e) => {
+              // Track signup button clicks
+              if (e.target.closest('button')) {
+                const button = e.target.closest('button');
+                const buttonText = button.textContent?.toLowerCase() || '';
+                let buttonType = 'unknown';
+                
+                if (buttonText.includes('google')) {
+                  buttonType = 'google';
+                } else if (buttonText.includes('facebook')) {
+                  buttonType = 'facebook';
+                } else if (buttonText.includes('sign')) {
+                  buttonType = 'general_signup';
+                }
+                
+                analytics.trackSignupButtonClick(buttonType, {
+                  buttonText: button.textContent,
+                  element: button.className
+                });
+              }
+            }}
+          >
             <Auth
               supabaseClient={supabase}
               appearance={{

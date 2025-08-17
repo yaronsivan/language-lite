@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import yaml from 'js-yaml';
+import analytics from '../../lib/analytics';
 
 const LANGUAGES = [
   'Hebrew', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch', 'Polish', 'Russian',
@@ -238,6 +239,12 @@ export default function AppPage() {
   };
 
   const shareToWhatsApp = () => {
+    analytics.trackShareForCredits({ 
+      platform: 'whatsapp', 
+      shareType: 'adapted_text',
+      language: lastAdaptedLanguage,
+      level: lastAdaptedLevel
+    });
     const text = `Check out this adapted text from Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}\n\nTry it yourself at language-lite.com`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encodedText}`, '_blank');
@@ -245,6 +252,12 @@ export default function AppPage() {
   };
 
   const shareToEmail = () => {
+    analytics.trackShareForCredits({ 
+      platform: 'email', 
+      shareType: 'adapted_text',
+      language: lastAdaptedLanguage,
+      level: lastAdaptedLevel
+    });
     const subject = encodeURIComponent('Adapted Text from Language Lite');
     const body = encodeURIComponent(`I adapted this text using Language Lite:\n\n${adaptedResult.adaptedText}\n\nVocabulary:\n${adaptedResult.vocabulary.map(item => `• ${item.word}: ${item.translation}`).join('\n')}\n\nCheck out Language Lite at language-lite.com`);
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
@@ -252,6 +265,12 @@ export default function AppPage() {
   };
 
   const shareToTwitter = () => {
+    analytics.trackShareForCredits({ 
+      platform: 'twitter', 
+      shareType: 'adapted_text',
+      language: lastAdaptedLanguage,
+      level: lastAdaptedLevel
+    });
     const text = encodeURIComponent(`Just adapted text to my learning level with Language Lite! 📚✨ Check it out: language-lite.com`);
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
     setShowShareMenu(false);
@@ -282,12 +301,22 @@ export default function AppPage() {
   };
 
   const shareReferralToWhatsApp = () => {
+    analytics.trackShareForCredits({ 
+      platform: 'whatsapp', 
+      shareType: 'referral_link',
+      referralCode: referralCode
+    });
     const text = `Hey! I've been using Language Lite to adapt texts to my reading level and it's amazing! 📚✨\n\nYou can try it for free here: ${referralLink}\n\nWhen you sign up, we both get 20 extra credits! 🎉`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encodedText}`, '_blank');
   };
 
   const shareReferralToEmail = () => {
+    analytics.trackShareForCredits({ 
+      platform: 'email', 
+      shareType: 'referral_link',
+      referralCode: referralCode
+    });
     const subject = encodeURIComponent('Try Language Lite - Get Free Credits!');
     const body = encodeURIComponent(`Hi!\n\nI've been using Language Lite to adapt texts to my reading level and it's fantastic!\n\nYou can try it for free here: ${referralLink}\n\nWhen you sign up using this link, we both get 20 extra credits!\n\nCheck it out: language-lite.com`);
     window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
@@ -428,6 +457,15 @@ export default function AppPage() {
       return;
     }
 
+    // Track text adaptation usage
+    analytics.trackTextAdaptation({
+      language,
+      level,
+      motherTongue,
+      textLength: text.length,
+      credits: credits
+    });
+
     // Save preferences
     localStorage.setItem('lastLanguage', language);
     localStorage.setItem('lastLevel', level);
@@ -559,7 +597,10 @@ export default function AppPage() {
             {/* Hamburger Menu */}
             <div className="relative">
               <button
-                onClick={() => setShowMenu(!showMenu)}
+                onClick={() => {
+                  analytics.trackMenuClick({ isOpen: showMenu });
+                  setShowMenu(!showMenu);
+                }}
                 className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -572,28 +613,40 @@ export default function AppPage() {
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border z-50">
                   <div className="py-2">
                     <button 
-                      onClick={() => setShowPremiumPopup(true)}
+                      onClick={() => {
+                        analytics.trackMenuButtonClick('adaptive_learning_path', { isPremium: true });
+                        setShowPremiumPopup(true);
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
                       <span>Adaptive Learning Path</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
-                      onClick={() => setShowPremiumPopup(true)}
+                      onClick={() => {
+                        analytics.trackMenuButtonClick('custom_reading_library', { isPremium: true });
+                        setShowPremiumPopup(true);
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
                       <span>Custom Reading Library</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
-                      onClick={() => setShowPremiumPopup(true)}
+                      onClick={() => {
+                        analytics.trackMenuButtonClick('word_mastery_vault', { isPremium: true });
+                        setShowPremiumPopup(true);
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
                       <span>Word Mastery Vault</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
-                      onClick={() => setShowPremiumPopup(true)}
+                      onClick={() => {
+                        analytics.trackMenuButtonClick('learn_everywhere', { isPremium: true });
+                        setShowPremiumPopup(true);
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
                       <span>Learn Everywhere</span>
@@ -601,13 +654,19 @@ export default function AppPage() {
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button 
-                      onClick={() => window.location.href = '/upgrade'}
+                      onClick={() => {
+                        analytics.trackUpgradePageVisit('menu', { source: 'menu_upgrade_button' });
+                        window.location.href = '/upgrade';
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-900 hover:bg-gray-50 font-medium"
                     >
                       Upgrade
                     </button>
                     <button 
-                      onClick={() => setShowExtensionPopup(true)}
+                      onClick={() => {
+                        analytics.trackMenuButtonClick('connect_extension', { feature: 'extension' });
+                        setShowExtensionPopup(true);
+                      }}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
                     >
                       Connect Browser Extension
@@ -615,6 +674,7 @@ export default function AppPage() {
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
                       onClick={async () => {
+                        analytics.trackMenuButtonClick('sign_out', { action: 'logout' });
                         await supabase.auth.signOut();
                         localStorage.removeItem('userEmail');
                         window.location.href = '/';
