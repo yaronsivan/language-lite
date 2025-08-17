@@ -1017,14 +1017,14 @@ export default function AppPage() {
               <div className="text-4xl mb-4">👑</div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Premium Features</h3>
               <p className="text-gray-600 mb-6">
-                For just $1 a month, get access to all these premium features and more:
+                For just $5 a month, get access to all these premium features and more:
               </p>
               <ul className="text-left text-gray-700 mb-6 space-y-2">
+                <li>• 200 text adaptations per month</li>
                 <li>• Personalized level assessments</li>
                 <li>• Save and organize your texts</li>
                 <li>• Personal vocabulary collection</li>
                 <li>• Browser extension</li>
-                <li>• Advanced analytics</li>
                 <li>• Priority support</li>
               </ul>
               <div className="flex gap-3">
