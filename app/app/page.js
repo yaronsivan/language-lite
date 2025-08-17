@@ -614,43 +614,42 @@ export default function AppPage() {
                   <div className="py-2">
                     <button 
                       onClick={() => {
-                        analytics.trackMenuButtonClick('adaptive_learning_path', { isPremium: true });
+                        analytics.trackMenuButtonClick('level_assessment', { isPremium: true });
                         setShowPremiumPopup(true);
                       }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>Adaptive Learning Path</span>
+                      <span>Get My Level Assessment</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => {
-                        analytics.trackMenuButtonClick('custom_reading_library', { isPremium: true });
+                        analytics.trackMenuButtonClick('adapted_texts', { isPremium: true });
                         setShowPremiumPopup(true);
                       }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>Custom Reading Library</span>
+                      <span>My Adapted Texts</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => {
-                        analytics.trackMenuButtonClick('word_mastery_vault', { isPremium: true });
+                        analytics.trackMenuButtonClick('vocabulary_collection', { isPremium: true });
                         setShowPremiumPopup(true);
                       }}
                       className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
                     >
-                      <span>Word Mastery Vault</span>
+                      <span>My Vocabulary Collection</span>
                       <span className="text-yellow-500">👑</span>
                     </button>
                     <button 
                       onClick={() => {
-                        analytics.trackMenuButtonClick('learn_everywhere', { isPremium: true });
-                        setShowPremiumPopup(true);
+                        analytics.trackMenuButtonClick('browser_extension', { feature: 'extension' });
+                        setShowExtensionPopup(true);
                       }}
-                      className="w-full px-4 py-2 text-left text-gray-400 hover:bg-gray-50 flex items-center justify-between"
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
                     >
-                      <span>Learn Everywhere</span>
-                      <span className="text-yellow-500">👑</span>
+                      <span>Get Browser Extension</span>
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button 
@@ -660,16 +659,7 @@ export default function AppPage() {
                       }}
                       className="w-full px-4 py-2 text-left text-gray-900 hover:bg-gray-50 font-medium"
                     >
-                      Upgrade
-                    </button>
-                    <button 
-                      onClick={() => {
-                        analytics.trackMenuButtonClick('connect_extension', { feature: 'extension' });
-                        setShowExtensionPopup(true);
-                      }}
-                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
-                    >
-                      Connect Browser Extension
+                      Upgrade to Premium
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
