@@ -44,6 +44,7 @@ export default function AppPage() {
   const [typedText, setTypedText] = useState('');
   const [copiedText, setCopiedText] = useState(false);
   const [copiedTable, setCopiedTable] = useState(false);
+  const [showExtensionPopup, setShowExtensionPopup] = useState(false);
   
   const typingTimeoutRef = useRef(null);
 
@@ -518,7 +519,14 @@ export default function AppPage() {
         <div className="flex justify-between items-center">
           {/* Left: Language Lite + Credits */}
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-900 font-zain">Language Lite</h1>
+            <div className="flex items-center gap-3">
+              <img 
+                src="/language-lite-icon-transparent.png" 
+                alt="Language Lite" 
+                className="w-8 h-8"
+              />
+              <h1 className="text-2xl font-bold text-gray-900 font-zain">Language Lite</h1>
+            </div>
             <span className="bg-gray-900 text-white px-3 py-1 text-sm font-semibold">
               {credits} credits remaining
             </span>
@@ -587,6 +595,12 @@ export default function AppPage() {
                       className="w-full px-4 py-2 text-left text-gray-900 hover:bg-gray-50 font-medium"
                     >
                       Upgrade
+                    </button>
+                    <button 
+                      onClick={() => setShowExtensionPopup(true)}
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50"
+                    >
+                      Connect Browser Extension
                     </button>
                     <div className="border-t border-gray-100 my-1"></div>
                     <button
@@ -970,6 +984,91 @@ export default function AppPage() {
                   Upgrade Now
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Extension Connection Popup */}
+      {showExtensionPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowExtensionPopup(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div className="text-center">
+              <div className="text-4xl mb-4">🔗</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Connect Browser Extension</h3>
+              
+              <div className="text-left mb-6">
+                <p className="text-gray-600 mb-4">
+                  Connect the Language Lite browser extension to adapt text on any website!
+                </p>
+                
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <p className="font-medium mb-2">Quick Setup:</p>
+                  <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                    <li>Install the Language Lite extension</li>
+                    <li>Click the button below to connect</li>
+                    <li>Start adapting text anywhere on the web!</li>
+                  </ol>
+                </div>
+              </div>
+              
+              <button
+                onClick={async () => {
+                  try {
+                    // Get current session
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (session) {
+                      // Send token to extension (this requires the extension to be installed)
+                      if (window.chrome && chrome.runtime) {
+                        // Try to send message to extension
+                        chrome.runtime.sendMessage(
+                          'YOUR_EXTENSION_ID', // This will be replaced with actual extension ID
+                          { 
+                            action: 'setAuthToken',
+                            token: session.access_token 
+                          },
+                          (response) => {
+                            if (chrome.runtime.lastError) {
+                              // Extension not installed, copy token to clipboard instead
+                              navigator.clipboard.writeText(session.access_token);
+                              alert('Token copied to clipboard! Paste it in the extension.');
+                            } else if (response && response.success) {
+                              alert('Extension connected successfully!');
+                              setShowExtensionPopup(false);
+                            }
+                          }
+                        );
+                      } else {
+                        // Copy token and preferences to clipboard as fallback
+                        navigator.clipboard.writeText(`Token: ${session.access_token}\nMother Tongue: ${motherTongue}`);
+                        alert('Auth info copied to clipboard! Paste the token in the extension settings.');
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error connecting extension:', error);
+                    alert('Failed to connect extension. Please try again.');
+                  }
+                }}
+                className="w-full bg-[#ffb238] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#ff9f00] transition-colors"
+              >
+                Connect Extension
+              </button>
+              
+              <p className="text-xs text-gray-500 mt-4">
+                Don't have the extension? 
+                <a href="#" className="text-blue-500 hover:underline ml-1">Get it here</a>
+              </p>
             </div>
           </div>
         </div>

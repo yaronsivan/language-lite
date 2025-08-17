@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@200;400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      width: 350px;
+      min-height: 400px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f9fafb;
+    }
+    
+    .header {
+      background: #ffb238;
+      padding: 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      color: white;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+    
+    .header img {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      position: relative;
+    }
+    
+    .credits-display {
+      background: #000000;
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+    
+    .user-menu-trigger {
+      width: 24px;
+      height: 24px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+      border-radius: 50%;
+    }
+    
+    .user-menu-trigger:hover {
+      opacity: 0.7;
+    }
+    
+    .user-menu {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      min-width: 160px;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .user-menu.show {
+      display: block;
+    }
+    
+    .user-menu button {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+      color: #374151;
+    }
+    
+    .user-menu button:hover {
+      background: #f9fafb;
+    }
+    
+    .user-menu button:first-child {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    
+    .user-menu button:last-child {
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      color: #dc2626;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .description {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    
+    .language-settings {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    
+    .language-settings.show {
+      display: block;
+    }
+    
+    .language-settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .language-settings h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .language-settings-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .language-settings-close:hover {
+      color: #374151;
+    }
+    
+    .controls {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .control-group {
+      margin-bottom: 12px;
+    }
+    
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      background: white;
+      font-size: 14px;
+      color: #1f2937;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #ffb238;
+      box-shadow: 0 0 0 3px rgba(255, 178, 56, 0.1);
+    }
+    
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #ffb238;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #ff9f00;
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .btn-secondary:hover {
+      background: #f9fafb;
+    }
+    
+    .instructions {
+      margin-top: 24px;
+      margin-bottom: 20px;
+      padding: 0;
+      font-size: 15px;
+      color: #000000;
+      line-height: 1.6;
+      font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 200;
+    }
+    
+    .instructions strong {
+      font-weight: 400;
+    }
+    
+    .login-prompt {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .login-prompt p {
+      color: #6b7280;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #ffb238;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <img src="icon-48.png" alt="Language Lite">
+      <h1>Language Lite</h1>
+    </div>
+    <div class="header-right">
+      <div class="credits-display" id="credits-display">0 credits</div>
+      <button class="user-menu-trigger" id="user-menu-trigger">👤</button>
+      <div class="user-menu" id="user-menu">
+        <button id="language-settings-btn">Language Settings</button>
+        <button id="logout-btn">Logout</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div id="login-prompt" class="login-prompt" style="display: none;">
+      <p>Please connect the extension to Language Lite</p>
+      <button class="btn-primary" id="login-btn">Connect Extension</button>
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <p style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Or paste the copied auth info:</p>
+        <textarea id="token-input" placeholder="Paste the copied text here (Token: ... Mother Tongue: ...)" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 11px; margin-bottom: 8px; resize: vertical; font-family: monospace;"></textarea>
+        <button class="btn-secondary" id="manual-token-btn" style="width: 100%; font-size: 12px;">Connect with Auth Info</button>
+      </div>
+    </div>
+    
+    <div id="main-content">
+      <div class="description" id="description">
+        Adapting the identified language (<span id="detected-language">Auto-detect</span> by default) to a <span id="current-level">Beginner</span> reading level, and building a vocabulary list in <span id="current-mother-tongue">English</span>.
+      </div>
+      
+      <div class="language-settings" id="language-settings">
+        <div class="language-settings-header">
+          <h4>Language Settings</h4>
+          <button class="language-settings-close" id="language-settings-close">✕</button>
+        </div>
+        <div class="control-group">
+          <label for="mother-tongue">Mother Tongue</label>
+          <select id="mother-tongue">
+            <option value="English">English</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="German">German</option>
+            <option value="Italian">Italian</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Russian">Russian</option>
+            <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Korean">Korean</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Hebrew">Hebrew</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="language">Default Target Language</label>
+          <select id="language">
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="German">German</option>
+            <option value="Italian">Italian</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Russian">Russian</option>
+            <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Korean">Korean</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Hebrew">Hebrew</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="level">Reading Level</label>
+          <select id="level">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="instructions">
+        <strong>How to use:</strong><br>
+        1. Select any text on a webpage<br>
+        2. Click the 📚 button that appears<br>
+        3. If your text is already selected you click the button below
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-primary" id="adapt-btn">
+          <span id="adapt-text">Adapt Selected Text</span>
+        </button>
+        <button class="btn-secondary" id="open-app">Go to Language Lite Webapp</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

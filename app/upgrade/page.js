@@ -13,7 +13,14 @@ export default function UpgradePage() {
       {/* Header */}
       <div className="bg-[#ffb238] p-4">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 font-zain">Language Lite</h1>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/language-lite-icon-transparent.png" 
+              alt="Language Lite" 
+              className="w-8 h-8"
+            />
+            <h1 className="text-2xl font-bold text-gray-900 font-zain">Language Lite</h1>
+          </div>
           <button
             onClick={() => window.location.href = '/app'}
             className="text-gray-700 hover:text-gray-900"

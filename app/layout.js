@@ -14,6 +14,16 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Language Lite - Adapt Any Text to Your Reading Level",
   description: "Transform any text into your perfect reading level. AI-powered language learning tool that adapts content for beginners, intermediate, and advanced learners. Start learning with personalized texts today!",
+  icons: {
+    icon: [
+      { url: '/language-lite-icon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/language-lite-icon.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/language-lite-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/language-lite-icon.png',
+  },
   keywords: "language learning, text adaptation, reading level, AI language tool, personalized learning, CEFR levels, vocabulary building",
   authors: [{ name: "Language Lite" }],
   creator: "Language Lite",
@@ -34,7 +44,7 @@ export const metadata = {
     siteName: "Language Lite",
     images: [
       {
-        url: "https://language-lite.com/favicon.ico",
+        url: "https://language-lite.com/language-lite-icon.png",
         width: 512,
         height: 512,
         alt: "Language Lite - AI-Powered Text Adaptation for Language Learners",
@@ -47,7 +57,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Language Lite - Adapt Any Text to Your Reading Level",
     description: "Transform any text into your perfect reading level. AI-powered language learning tool with personalized content adaptation.",
-    images: ["https://language-lite.com/favicon.ico"],
+    images: ["https://language-lite.com/language-lite-icon.png"],
     creator: "@languagelite",
   },
   robots: {

@@ -176,9 +176,16 @@ export default function HomePage() {
         <div className="max-w-md mx-auto w-full">
           {/* Logo/Brand */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 font-zain">
-              Language Lite
-            </h1>
+            <div className="flex items-center gap-4 mb-2">
+              <img 
+                src="/language-lite-icon-transparent.png" 
+                alt="Language Lite" 
+                className="w-12 h-12"
+              />
+              <h1 className="text-4xl font-bold text-gray-900 font-zain">
+                Language Lite
+              </h1>
+            </div>
             <p className="text-lg text-gray-600">
               Read anything in your target language, at your level
             </p>
