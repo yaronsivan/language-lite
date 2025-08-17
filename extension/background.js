@@ -1,6 +1,6 @@
 // Background service worker - handles extension-wide events
 
-const API_BASE_URL = 'http://localhost:3000'; // Change to https://language-lite.com for production
+const API_BASE_URL = 'https://language-lite.com';
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener(() => {

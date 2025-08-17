@@ -1,6 +1,6 @@
 // Popup script - handles extension popup interactions
 
-const API_BASE_URL = 'http://localhost:3000'; // Change to https://language-lite.com for production
+const API_BASE_URL = 'https://language-lite.com';
 
 // Load saved preferences and auth state
 document.addEventListener('DOMContentLoaded', async () => {
