@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 
 export default function AnalyticsPage() {
@@ -17,7 +17,7 @@ export default function AnalyticsPage() {
     if (isAuthorized) {
       fetchDashboardData();
     }
-  }, [timeframe, isAuthorized]);
+  }, [timeframe, isAuthorized, fetchDashboardData]);
 
   const checkAuth = async () => {
     try {
@@ -32,14 +32,14 @@ export default function AnalyticsPage() {
       if (authorizedEmails.includes(user.email)) {
         setIsAuthorized(true);
       } else {
-        setError(`Unauthorized access. Contact admin for access.`);
+        setError('Unauthorized access. Contact admin for access.');
       }
     } catch (err) {
       setError('Authentication failed');
     }
   };
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/analytics/dashboard?timeframe=${timeframe}`);
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeframe]);
 
   if (error) {
     return (
@@ -71,7 +71,7 @@ export default function AnalyticsPage() {
       <main className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Restricted</h1>
-          <p className="text-gray-600">You don't have permission to view analytics.</p>
+          <p className="text-gray-600">You don&apos;t have permission to view analytics.</p>
         </div>
       </main>
     );
