@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
 export default function AnalyticsPage() {
@@ -17,7 +17,8 @@ export default function AnalyticsPage() {
     if (isAuthorized) {
       fetchDashboardData();
     }
-  }, [timeframe, isAuthorized, fetchDashboardData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeframe, isAuthorized]);
 
   const checkAuth = async () => {
     try {
@@ -39,7 +40,7 @@ export default function AnalyticsPage() {
     }
   };
 
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/analytics/dashboard?timeframe=${timeframe}`);
@@ -53,7 +54,7 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  }, [timeframe]);
+  };
 
   if (error) {
     return (
